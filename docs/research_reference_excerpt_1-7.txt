@@ -1,0 +1,782 @@
+An interpretable ensemble machine learning model for predicting carbon 
+dioxide adsorption on magnesium oxide-based sorbents
+Lin Fan a,b
+, Yan He c,*, Yunfeng Mo a, Yiming Cao c
+a Engineering Training Centre, Liaoning Petrochemical University, Fushun, 113001, Liaoning, China
+b School of Mechanical Engineering, Shenyang University of Technology, Shenyang, 110870, Liaoning, China
+c School of Mechanical Engineering, Liaoning Petrochemical University, Fushun, 113001, Liaoning, China
+A R T I C L E I N F O
+Keywords:
+Ensemble learning
+MgO-based sorbents
+CO2 adsorption
+Model interpretation
+Streamlit
+A B S T R A C T
+Accurately predicting the carbon dioxide (CO2) adsorption capacity of magnesium oxide (MgO)-based sorbents is 
+crucial for advancing carbon capture technologies. This study develops an interpretable machine learning 
+framework to address this challenge. Fourteen candidate models were evaluated, with six top-performing ones 
+selected for Bayesian hyperparameter optimization using the Optuna framework. A novel weighted ensemble 
+model was then constructed by integrating the entropy weight method and the Technique for Order Preference 
+by Similarity to Ideal Solution. The optimized ensemble model demonstrated outstanding performance on an 
+independent test set, achieving an R2 of 0.9903 with MSE, RMSE, and MAE of 0.361, 0.6008, and 0.2544 
+respectively, surpassing most individual models. SHapley Additive exPlanations analysis identified material 
+morphology as the most significant feature (43.8% contribution), particularly granular morphology. Process 
+parameters including time (23.3%) and temperature (14.1%) were the next major contributors, while pore 
+structure variables collectively contributed 15.3%. The analysis further revealed complex non-linear de­
+pendencies and interaction effects, with the combination of medium temperature (200-400 ◦C) and adsorption 
+time (100-250 min) proving optimal. Additionally, a web application was deployed to provide real-time pre­
+diction capability. This work provides both a reliable predictive tool and valuable mechanistic insights for 
+designing high-performance MgO-based CO2 adsorbents.
+1. Introduction
+In response to the escalating severity of global climate change, car­
+bon dioxide (CO2) capture and storage technology represents a key 
+pathway toward the attainment of carbon neutrality goals. Among 
+various adsorbent materials, metal oxide-based adsorbents have 
+received significant attention due to their high theoretical adsorption 
+capacity and renewability. In particular, magnesium oxide (MgO) based 
+materials exhibit excellent CO2 adsorption potential in the medium- 
+temperature range (Gao et al., 2017a). Compared with other adsor­
+bents, MgO stands out as a promising candidate owing to its high 
+theoretical CO2 adsorption capacity, relatively mild operating condi­
+tions, abundant raw material sources, excellent recyclability, and the 
+tunability of its surface alkalinity and pore structure via strategies like 
+morphology control and doping (Alhalawani et al., 2025; Figueiredo 
+et al., 2024; Perera et al., 2024). However, the CO2 adsorption perfor­
+mance of this material is governed by a multitude of factors, including 
+material morphology (Tan et al., 2020; Guo et al., 2020), pore structure 
+(Song et al., 2015), the nature of dopants (Dal Pozzo et al., 2019; Trivi˜no 
+et al., 2018), and process conditions (Kwon et al., 2023; Chai et al., 
+2024). The existence of complex nonlinear interactions among these 
+variables poses a significant challenge for traditional methods that 
+depend on experimental trial-and-error or linear regression. This limi­
+tation obstructs accurate prediction of adsorption behavior, conse­
+quently hampering efficient material design and process optimization.
+Machine learning (ML) offers a powerful means of deciphering the 
+complex structure-activity relationships inherent to these systems. 
+These techniques have proven successful in predicting diverse adsorp­
+tion processes, showcasing their capacity to model multivariate and 
+nonlinear interactions (Zhang et al., 2024; Liu et al., 2025; Liu et al., 
+2024a; Application of machine learning in, 2022; Zhao et al., 2025a). 
+Although previous investigations have utilized empirical models or 
+standalone machine learning approaches for predicting adsorption 
+performance (Yu et al., 2024; Yuan et al., 2024; Jiang et al., 2024; Liu 
+* Corresponding author.
+E-mail address: 1422017226@qq.com (Y. He). 
+Contents lists available at ScienceDirect
+Environmental Research
+journal homepage: www.elsevier.com/locate/envres
+https://doi.org/10.1016/j.envres.2026.124126
+Received 9 December 2025; Received in revised form 7 February 2026; Accepted 25 February 2026  
+Environmental Research 297 (2026) 124126 
+Available online 26 February 2026 
+0013-9351/© 2026 Elsevier Inc. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+et al., 2024b), these methods commonly exhibit deficiencies in gener­
+alization ability, model interpretability, and the capacity to represent 
+multi-variable coupling effects. Especially in the prediction of 
+MgO-based adsorbents, existing studies mostly focus on the preliminary 
+application of a single model, such as Decision Tree (Lu et al., 2025) and 
+Gradient Boosting Regression Trees (GBRT) (Fan et al., 2025). Conse­
+quently, an integrated strategy capable of synergistically enhancing 
+both predictive accuracy and model stability is notably absent. More­
+over, a systematic quantification of the contribution of individual fea­
+tures to the adsorption capacity, as well as their complex interactions, 
+remains underdeveloped (Nguyen et al., 2024). This gap impedes the 
+establishment of a foundational principle for the rational design of 
+high-performance adsorbents. Therefore, the development of an inte­
+grated ML framework that simultaneously delivers high predictive ac­
+curacy and robust interpretability is of paramount importance for 
+advancing the rational design and process optimization of MgO-based 
+adsorbents.
+This study presents an integrated ML framework that combines 
+ensemble modeling with interpretability analysis to accurately predict 
+the CO2 uptake of MgO-based adsorbents. A systematic comparison of 
+14 ML algorithms is conducted, leading to the identification of six top- 
+performing models for subsequent hyperparameter optimization. The 
+entropy weight method and the Technique for Order Preference by 
+Similarity to Ideal Solution (TOPSIS) method are employed to construct 
+a weighted ensemble model. This novel approach significantly enhances 
+prediction accuracy and robustness. Furthermore, the framework in­
+tegrates SHapley Additive exPlanations (SHAP), partial dependence 
+plots (PDP), and accumulated local effects (ALE) analyses to systemat­
+ically quantify the influence of morphology, pore structure, doping type, 
+and process parameters on adsorption performance, along with their 
+nonlinear interactions. This interpretable approach reveals the domi­
+nant factors governing adsorption capacity, including granular 
+morphology, specific intermediate ranges of temperature and time, and 
+metal oxide doping.
+2. Data and methods
+2.1. Data collection
+The dataset on CO2 adsorption by MgO-based adsorbents was con­
+structed from literature retrieved from the Web of Science core collec­
+tion database, covering publications between 2015 and 2025. The 
+literature search was conducted using key terms, namely “carbon di­
+oxide,” “magnesium oxide,” and “adsorption.” To ensure comprehen­
+siveness, an initial set of publications was expanded by examining the 
+citation networks of relevant articles identified in the search. Data 
+pertaining to CO2 uptake and adsorption process conditions were ac­
+quired from the main text or supplementary tables of relevant publica­
+tions. When data were exclusively presented graphically, the 
+corresponding isotherms, kinetic curves, or performance profiles were 
+digitally extracted using the Plot Digitizer software. To ensure accuracy, 
+each figure was calibrated against its axis scales prior to digitization. For 
+each critical data point, three independent extraction iterations were 
+performed, and the mean value was recorded as the final result. The 
+standard deviation derived from the triplicate extractions was docu­
+mented to quantify the uncertainty associated with the digitization 
+process. If the standard deviation for any data point exceeded 3% of its 
+mean value, the figure was recalibrated and the extraction process was 
+repeated.
+A systematic cross-checking procedure was applied to all digitized 
+data. The procedure comprised two principal steps: (i) replotting the 
+extracted data points against the original figures to verify trend con­
+sistency, and (ii) directly comparing the extracted key parameter values 
+with any numerically reported values in the source texts. Data points 
+exhibiting significant discrepancies during cross-checking were verified 
+and corrected when necessary. This verification was conducted by re- 
+examining the original publication or consulting relevant literature, 
+thereby ensuring the accuracy and reliability of the final compiled 
+dataset. Ultimately, data from 19 key studies (Tan et al., 2020; Song 
+et al., 2015; Chai et al., 2024; Li et al., 2017; Mn-promoted MgO ad­
+sorbents with boosted, 2025; Zhao et al., 2025c; Gong et al., 2023; Ding 
+et al., 2025; Gui et al., 2024; Alkadhem et al., 2020; Jin et al., 2020; Niu 
+et al., 2021; Alkadhem et al., 2021; Yu et al., 2018; Ding et al., 2015; Gao 
+et al., 2017b; Ding et al., 2021; Firmansyah et al., 2025; Li et al., 2024) 
+were systematically compiled to construct the final dataset.
+2.2. Data processing
+An exploratory data analysis (EDA) was performed on the original 
+dataset to characterize its initial distribution and to establish a foun­
+dation for subsequent preprocessing. The results of this EDA, including 
+box plots for all numerical variables, are presented in Fig. S1. In terms of 
+structural parameters, the SBET had a median value of approximately 
+100 m2/g, with an interquartile range of 50 to 150 m2/g. This suggested 
+that most adsorbents possessed a medium to low specific surface area, 
+although some samples modified by doping or activation exhibited 
+values as high as 500 m2/g. The Vpore distribution showed a median of 
+about 0.3 cm3/g, with most values ranging from 0.1 to 0.4 cm3/g; 
+however, maximum values approached 1.0 cm3/g. The pores were 
+predominantly mesoporous, with a median dpore of approximately 12 
+nm and a main range of 5-20 nm; the maximum observed pore size was 
+60 nm. Particle sizes were mainly distributed between 10 and 100 nm, 
+with isolated outliers observed at approximately 8000 nm. Regarding 
+process conditions, the median pressure was close to 0.1 MPa, and the 
+data exhibited a very narrow range of 0.05-0.15 MPa. This suggested 
+that the dataset predominantly comprised experiments conducted at or 
+near ambient pressure, with a limited number of high-pressure experi­
+ments reaching a maximum of approximately 1.0 MPa. The median 
+temperature was approximately 200 ◦C, and the data main ranged from 
+150 to 250 ◦C, with an upper outlier near 500 ◦C. The median adsorption 
+time was about 100 min, with values typically between 50 and 150 min 
+and a maximum duration of 350 min, which covered the testing re­
+quirements of both short-term kinetic studies and long-term equilibrium 
+assessments. The CO2 uptake had a median value of approximately 5 
+mmol/g, generally ranging from 2 to 8 mmol/g, while some modified 
+samples exhibited uptakes as high as 30 mmol/g. The EDA revealed key 
+characteristics of the original dataset, including the statistical distribu­
+tion, central tendency, and presence of outliers for each variable. 
+Furthermore, it confirmed that the dataset encompasses a wide diversity 
+of MgO-based adsorbent types and experimental conditions, which es­
+tablishes a solid foundation for developing robust machine learning 
+models.
+A data processing workflow was implemented to build a high-quality 
+dataset and ensure the reliability of subsequent machine learning 
+models. This pipeline commenced with data cleaning and missing value 
+treatment. The missing rate for each feature was quantified and is 
+detailed in Table S1. Several features, including dpore, particle size, Vpore, 
+and morphology, contained missing values. As the missing rate for each 
+of these features was below the predefined 30% exclusion threshold, all 
+were retained for analysis. Missing values in the numerical features were 
+addressed through an iterative imputation approach (Ribeiro and Frei­
+tas, 2021). The impact of imputation was assessed by comparing key 
+statistical summaries of the continuous variables, namely the mean, 
+standard deviation, skewness, and kurtosis, before and after the pro­
+cedure; these results are compiled in Table S2. For categorical features, 
+missing entries were filled using the most frequent category (mode), 
+which represents the most frequent category. The distributions of the 
+categorical variables are summarized in Table S3. The imputation pro­
+cess preserved the overall data distribution well without introducing 
+significant bias, thereby ensuring the reliability of the subsequent 
+modeling work. Outlier detection was performed using the Isolation 
+Forest algorithm (Puggini and McLoone, 2018). A sensitivity analysis 
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+2 
+was conducted to evaluate the impact of outlier removal by applying the 
+algorithm at different contamination rates: 0%, 5%, 10%, 15%, and 
+20%. The results of this comparative analysis are presented in Fig. S2. A 
+contamination rate of 5% was selected as the optimal threshold. This 
+setting provided a favorable balance, yielding superior model perfor­
+mance compared to other rates while preserving the majority of valid 
+data points. Following manual verification, the data points identified as 
+outliers under this threshold were removed. This step produced a 
+refined, high-quality dataset consisting of 3594 samples. The complete 
+dataset is provided in Supporting Information 2. In this dataset, the CO2 
+adsorption capacity, denoted as CO2 uptake, was defined as the target 
+variable. The input features were categorized into three groups: pore 
+characteristics, including specific surface area (SBET, m2/g), pore volume 
+(Vpore, cm3/g), and pore size (dpore, nm); material properties, such as 
+particle size, morphology, and the type of Doped-modified; and exper­
+imental conditions, including pressure (MPa), temperature (◦C), and 
+time (min).
+Different encoding strategies were applied to the categorical vari­
+ables to balance model performance, feature dimensionality, and 
+interpretability. Specifically, the Morphology variable comprises eight 
+unordered categories with no inherent, quantifiable ordinal relationship 
+among them. Consequently, one-hot encoding was applied to avoid 
+imposing spurious ordinal assumptions. In contrast, the Dopant or 
+modifier variable contains 39 distinct categories. Using one-hot encod­
+ing for this variable would create high-dimensional sparse features, 
+potentially inducing model overfitting and increased computational 
+complexity. Therefore, to manage the feature dimensionality, label 
+encoding was employed for this variable.
+Although label encoding was applied, its potential to introduce 
+spurious ordinal relationships was addressed during the model inter­
+pretation phase. The specific impact of the dopant or modifier variable 
+on adsorption capacity was elucidated using Partial Dependence Plots 
+(PDP) and Accumulated Local Effects (ALE) plots, ensuring a robust 
+interpretability analysis for this key feature. A comparative evaluation 
+revealed that the predictive performance of models capable of natively 
+handling categorical features, such as CatBoost, was comparable to the 
+performance achieved using a uniform encoding scheme across all 
+models. Detailed performance comparisons are provided in Table S4 and 
+Fig. S3, with corresponding hyperparameters listed in Table S5. There­
+fore, a uniform encoding scheme was adopted. This approach guaran­
+teed consistent feature representation for all models involved in 
+comparative and ensemble learning analyses, which was essential for 
+ensuring fair model comparisons and reliable ensemble weighting.
+All numerical features were standardized to eliminate scale differ­
+ences, thereby enhancing model convergence speed and performance. 
+The linear dependence between each input variable and the target was 
+assessed using the Pearson correlation coefficient (PCC). The PCC is 
+defined by the following equation (Yuan et al., 2021): 
+ρxy =
+∑n
+i=1(xi −x)∑n
+i=1(yi −y)̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+∑n
+i=1(xi −x)2∑n
+i=1(yi −y)2
+√
+(1) 
+Where, ρxy represents the PCC value between features and targets, with x 
+and y denoting the means of the input feature x and the output target y, 
+respectively. The range of ρxy extends from −1 to 1, where a value of 
+0 indicates no linear correlation, while high negative or positive values 
+signify strong negative or strong positive correlations, respectively. The 
+PCC values of all feature pairs were all less than 0.8, indicating that there 
+were no redundant or irrelevant features in all the data (Fig. S4.).
+A group-based data splitting strategy was implemented to prevent 
+potential data leakage arising from multiple measurements reported in 
+the same original study. This strategy ensured that all samples origi­
+nating from a single publication were assigned exclusively to one subset, 
+specifically the training, validation, or test set. The splitting procedure 
+began with the random partition of all studies. Here, 80% of the studies, 
+along with all their associated samples, were allocated to a provisional 
+training pool, while the remaining 20% were reserved as the indepen­
+dent test set. Next, 12.5% of the studies within this training pool were 
+randomly selected to form the validation set; this proportion corre­
+sponded to 10% of the total samples. The validation set was utilized for 
+hyperparameter optimization and for monitoring training progress. A 
+fixed random seed was employed for all random partitioning steps to 
+ensure the complete reproducibility of the data splits. The numerical 
+variables exhibited significant scale variations. Therefore, standardiza­
+tion was applied prior to model training to enhance data comparability 
+and analytical accuracy, as well as to prevent scale differences from 
+adversely affecting model performance. Consequently, to maintain 
+consistent data scaling and prevent information leakage from the test 
+set, standardization was performed using the StandardScaler from the 
+scikit-learn library. The scaler was fitted exclusively on the training 
+data, and the resulting scaling parameters were then used to transform 
+the training, validation, and test sets uniformly. The standardization is 
+defined by the following equation (Wu and Wang, 2020): 
+z = x −μ
+σ
+(2) 
+Where, z is the standardized value of initial x, x is the feature value; μ is 
+the mean of each feature, and σ is the standard deviation of each feature.
+2.3. Model development and optimization
+A two-stage machine learning pipeline was implemented for the 
+development of high-performance predictive models. In the first stage, a 
+preliminary screening of candidate models was conducted. Fourteen 
+candidate regression algorithms were trained and evaluated under their 
+default hyperparameter configurations. The objective of this stage was a 
+rapid comparative assessment rather than the generation of deployable 
+models or precise performance metrics. This approach enabled the 
+identification of algorithms with fundamental promise and the elimi­
+nation of clearly underperforming ones, thereby concentrating compu­
+tational resources on the subsequent, more intensive hyperparameter 
+optimization stage. Based on their performance in this initial evaluation, 
+the six top-performing algorithms were selected to proceed to the second 
+stage. This two-stage design facilitated the efficient identification of 
+algorithm types well-suited to the specific dataset, while minimizing 
+initial computational overhead. The second stage focused on hyper­
+parameter optimization and rigorous model evaluation. A Bayesian 
+optimization framework was applied to tune the hyperparameters for 
+each of the six shortlisted models to maximize their predictive perfor­
+mance. The Optuna framework served as the optimization engine, 
+employing Sequential Model-Based Optimization (Wang et al., 2023) to 
+efficiently 
+navigate 
+high-dimensional 
+hyperparameter 
+spaces. 
+Model-specific search spaces were defined according to the unique 
+characteristics of each algorithm, ensuring a search process that was 
+both comprehensive and computationally efficient. To guarantee a fair 
+comparison, the performance of every hyperparameter configuration 
+was evaluated via 5-fold cross-validation.
+A suite of complementary metrics was employed for a comprehen­
+sive evaluation of model performance. The Mean Squared Error (MSE) 
+served as the primary loss function to be minimized during model 
+training. The Root Mean Squared Error (RMSE), calculated as the square 
+root of MSE, yields an error metric on the same scale as the target var­
+iable, thereby aiding in its physical interpretation. The Mean Absolute 
+Error (MAE) measures the average magnitude of the prediction errors 
+and is robust to outliers. The Coefficient of Determination (R2) quan­
+tifies the proportion of variance in the target variable that is explained 
+by the model. Collectively, these metrics establish a robust evaluation 
+framework, encompassing four key dimensions: the optimization target, 
+error scale, absolute deviation, and goodness of fit. The definitions of 
+these evaluation metrics are provided below (Liu et al., 2024b): 
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+3 
+MSE =
+∑
+N
+n=1
+(
+yact −ypred
+)2
+N
+(3) 
+RMSE =̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+∑
+N
+n=1
+(
+yact −ypred
+)2
+N
+√
+√
+√
+√
+√
+(4) 
+MAE =
+∑
+N
+n=1⃒⃒⃒
+yact −ypred⃒⃒⃒
+n
+(5) 
+R2 = 1 −
+∑
+N
+n=1
+(
+yact −ypred
+)2
+∑
+N
+n=1
+(
+ypred −ymean
+)2
+(6) 
+Where ypred is predicted value; yact is actual value; ymean is average target 
+value; n is the number of samples. Collectively, these metrics establish a 
+robust evaluation framework, encompassing four key dimensions: the 
+optimization target, error scale, absolute deviation, and goodness of fit.
+A weighted ensemble strategy was adopted to enhance the robust­
+ness and accuracy of the predictive model. This approach mitigated the 
+reliance on the performance variance of any single model by leveraging 
+the complementary strengths of several high-performing base learners. 
+A critical aspect of this ensemble approach involved the objective 
+assignment of weights to each base learner. Accordingly, a weighting 
+strategy based on multi-criteria decision-making was introduced to 
+systematically rank and assign these weights. The entropy weight 
+method (Li et al., 2024) was utilized to automatically assign objective 
+weights to each evaluation metric according to the dispersion degree of 
+its values, thereby eliminating the subjectivity inherent in manual 
+weight assignment. Subsequently, the Technique for Order Preference 
+by Similarity to Ideal Solution (TOPSIS) method (Ribeiro and Freitas, 
+2021) was applied. This process involved calculating the distances from 
+each model to both a positive ideal solution (defined by the optimal 
+value for each metric) and a negative ideal solution (defined by the 
+worst value for each metric). A relative closeness score to the ideal so­
+lution was subsequently computed for each model. This score serves as a 
+composite rating that encapsulates the overall performance of each 
+model across all evaluated dimensions. Compared to the selection of a 
+single best model based on a solitary metric or the use of a simple 
+average across models, the entropy-weighted TOPSIS approach provides 
+a more integrated and nuanced strategy. This method leverages multi­
+dimensional performance data and assigns objective, data-driven 
+weights to the various metrics, thereby facilitating a more balanced 
+and robust model assessment. Based on this methodology, a weighted 
+ensemble model was constructed. The integration weight for each base 
+learner was set to be proportional to its normalized TOPSIS closeness 
+score, ensuring that learners with a higher composite score, indicative of 
+superior overall performance, exerted greater influence on the final 
+ensemble predictions. Initially, the entropy weight method (Chen et al., 
+2025) was employed to automatically assign weights to the evaluation 
+metrics according to their dispersion, thereby minimizing subjective 
+bias. Subsequently, the Technique for Order Preference by Similarity to 
+Ideal Solution (Zare Banadkouki, 2023) was applied to calculate the 
+relative closeness of each model to the ideal solution, which yielded a 
+comprehensive performance ranking. A weighted ensemble model was 
+then developed based on this ranking. The integration weight for each 
+base learner was assigned proportionally to its TOPSIS closeness, 
+granting higher influence in the final prediction to models with superior 
+rankings. This ensemble approach leverages the strengths of individual 
+models to enhance both the robustness and accuracy of predictions.
+3. Results and discussion
+3.1. Development of ML models
+3.1.1. Model selection
+Fourteen pre-selected machine learning models were initially 
+executed using their default hyperparameters and evaluated based on 
+MSE, RMSE, MAE, and R2. Prioritizing test set performance was critical 
+for evaluating model generalization, mitigating overfitting, and pre­
+venting data leakage, thereby providing a reliable basis for model se­
+lection and subsequent optimization. The comprehensive performance 
+ranking of all evaluated models on the test set was presented in Fig. S5. 
+Based on the TOPSIS ranking results, the six top-performing models 
+were selected for the subsequent hyperparameter optimization stage, 
+namely CatBoost, Extra Trees, XGBoost, Random Forest, GBRT, and 
+LightGBM. Notably, all selected models belonged to the category of 
+ensemble learning algorithms fundamentally built upon decision trees. 
+Their superior performance was not coincidental but primarily origi­
+nated from an inherent compatibility between their algorithmic prop­
+erties and the characteristics of the adsorption dataset investigated in 
+this study. The relationships between adsorption capacity and process 
+parameters are typically complex and nonlinear, involving significant 
+interaction effects. Tree-based models exhibit an inherent proficiency in 
+capturing such patterns. Specifically, Bagging algorithms such as 
+Random Forest and Extra Trees enhance generalization capability by 
+reducing model variance. In contrast, Boosting algorithms, for example 
+XGBoost, CatBoost, LightGBM, and GBRT, focus on bias reduction 
+through sequential and iterative refinement.
+3.1.2. Hyperparameter optimization
+Due to its heightened sensitivity to large errors and favorable 
+interpretability, RMSE was selected as the objective function for the 
+optimization process (Hodson, 2022). In each trial, the model was 
+trained on the training set, and the RMSE was calculated on the vali­
+dation fold. The average RMSE across all five folds subsequently served 
+as the evaluation metric for the corresponding hyperparameter set. A 
+total of 150 trials were conducted with the Optuna framework to bal­
+ance computational efficiency against search comprehensiveness. The 
+hyperparameter combination that yielded the lowest cross-validation 
+RMSE was independently chosen for each model. A final evaluation 
+was then conducted on a separate test set that had been excluded from 
+all training and optimization procedures, providing an unbiased esti­
+mation of the generalization capability of the models.
+The optimal performance metrics of the six models after hyper­
+parameter optimization are summarized in Table S6, and the corre­
+sponding hyperparameter sets are detailed in Table S7. As shown in 
+Fig. 1, the CatBoost model demonstrated exceptional performance after 
+hyperparameter tuning, achieving R2 values of 0.9954 on the training 
+set and 0.9892 on the test set. These results signify an excellent fitting 
+capability and outstanding generalization performance. The model also 
+exhibited low MSE (0.3015) and RMSE (0.5491) on the test set, con­
+firming its high predictive accuracy and stability. The Extra Trees model 
+achieved a perfect fit on the training set (R2 = 1.000), with a test set R2 
+of 0.9774. Although this test set performance was slightly lower, it still 
+indicates strong predictive stability, which is further substantiated by its 
+low error metrics (MSE = 0.3195, RMSE = 0.5652). Both the XGBoost 
+and Random Forest models also exhibited strong performance. XGBoost 
+attained R2 values of 0.9830 on the training set and 0.9717 on the test 
+set. Despite its relatively high test set MSE (0.7937) and RMSE (0.8909), 
+the model maintained satisfactory predictive reliability. Similarly, the 
+Random Forest model achieved R2 values of 0.9935 and 0.9742 for the 
+training and test sets, respectively. Its error metrics (MSE = 0.7970, 
+RMSE = 0.8928) were comparable to those of XGBoost; however, 
+Random Forest demonstrated superior performance in terms of MAE 
+(0.2070). In contrast, the LightGBM and GBRT models exhibited 
+comparatively inferior performance. GBRT, in particular, showed 
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+4 
+limited capability with R2 values of only 0.9574 on the training set and 
+0.9425 on the test set, alongside high error metrics, indicating con­
+straints in both its fitting and generalization abilities. Residual analysis 
+revealed discernible patterns in the error distributions for all models 
+across the training and test sets. The residuals of the Extra Trees and 
+CatBoost models were relatively uniform and randomly distributed. 
+Conversely, XGBoost and Random Forest exhibited more pronounced 
+fluctuations within specific value intervals.
+3.1.3. Model integration
+The employed evaluation metrics included MSE, RMSE, MAE, and 
+R2. These metrics differ not only in their scales but also in their funda­
+mental optimization objectives. Specifically, MSE, RMSE, and MAE are 
+error-minimization metrics, while R2 is a goodness-of-fit metric to be 
+maximized. To facilitate an equitable and consistent multi-criteria 
+evaluation, a preprocessing transformation was applied. The error 
+metrics, namely MSE, RMSE, and MAE, were first converted into 
+maximization-type metrics. This conversion ensured that for all metrics, 
+a higher numerical value consistently indicated superior model perfor­
+mance. Subsequently, to eliminate the influence of disparate measure­
+ment scales, the transformed metric values were normalized to a 
+uniform range of zero to one using Min-Max normalization. This two- 
+step preprocessing established a consistent and dimensionless basis for 
+the subsequent assignment of objective weights in the comprehensive 
+evaluation framework. For weight determination, the entropy weight 
+method was employed as an objective alternative to subjective weight­
+ing approaches. This method calculated weights based on the inherent 
+variability in the data of each evaluation indicator, with the computed 
+weights detailed. Indicators demonstrating greater variability were 
+considered to carry more information and were consequently assigned 
+higher weights within the comprehensive evaluation system. This 
+methodology ensured mathematical rigor and objectivity in the weight 
+assignment process, effectively minimized potential biases introduced 
+by subjective human judgment.
+The objective weights determined for each evaluation metric via the 
+entropy weight method are summarized in Table S8. RMSE received the 
+highest weight. This outcome indicated that the performance variation 
+across the base learners was most discernible with respect to the RMSE, 
+which consequently afforded this metric the greatest discriminative 
+power within the integrated assessment. Despite the inherent mathe­
+matical relationship between MSE and RMSE, both metrics were allo­
+cated considerable weights. This weighting result implied that MSE and 
+RMSE provided complementary information from distinct analytical 
+perspectives to the overall model evaluation, thereby jointly enabling a 
+more comprehensive performance assessment. Following the determi­
+nation of indicator weights, the TOPSIS method was employed to 
+conduct a comprehensive ranking of the base models. First, the original 
+data matrix was weighted and normalized using the previously obtained 
+entropy-based indicator weights. Subsequently, the positive ideal solu­
+tion and the negative ideal solution were identified. The relative close­
+ness of each model to these ideal solutions was then computed. This 
+relative closeness, which serves as a comprehensive score index, formed 
+the basis for the final ranking. The resulting relative closeness values 
+were then normalized to establish the final weighting coefficients for 
+each model within the integrated framework, as summarized in Table 1. 
+This systematic approach guaranteed that models demonstrating supe­
+rior and more consistent performance received higher weights in the 
+final ensemble, enabling the integrated model to effectively leverage the 
+complementary strengths of all base learners. The resulting predictive 
+model was designated the Entropy-TOPSIS Fusion Model (ETFM) and 
+Fig. 1. Performance comparison of the six top-performing machine learning models following hyperparameter tuning. (a) GBRT; (b) LightGBM; (c) Extra Trees; (d) 
+CatBoost; (e) Random Forest; (f) XGBoost.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+5 
+operated as a weighted average ensemble. The final prediction of the 
+ETFM was computed as the weighted sum of the predictions from all 
+base learners on the test samples, with the weights corresponding to the 
+normalized percentages derived from the TOPSIS procedure.
+To evaluate the efficacy of the proposed weighting strategy, the 
+performance of ETFM was compared against the two top-performing 
+individual models, as shown in Fig. 2 and Table S6. The evaluation re­
+sults of the ETFM demonstrated high predictive accuracy and stability 
+on both the training and test sets. The ETFM achieved R2 values of 
+0.9956 on the training set and 0.9903 on the test set, representing a 
+noticeable improvement over most individual models, particularly in 
+terms of generalization capability. Although the training set MSE 
+(0.1432) and RMSE (0.3785) of the ETFM were slightly higher than 
+those of certain single models, its test set MSE (0.3610) and RMSE 
+(0.6008) were markedly lower, underscoring the advantage of the 
+ensemble strategy. Furthermore, the MAE values of the ETFM, with 
+0.1757 on the training set and 0.2544 on the test set, were lower than 
+those of most individual models, indicating enhanced prediction accu­
+racy and robustness. It is noteworthy that while the ETFM exhibited 
+excellent overall performance, none of its individual evaluation metrics 
+were the absolute best among all models. For example, the Extra Trees 
+model showed significantly lower MSE and RMSE values on both the 
+training and test sets compared to the ETFM, reflecting its superior ca­
+pacity for fitting the training data. This observation suggested that for 
+certain specific tasks or datasets, the ensemble approach might not 
+outperform the best individual model across every single metric. The 
+strength of the ETFM, however, originated from its balanced stability 
+and generalization capability. By effectively integrating the advantages 
+of multiple base models, the ETFM mitigated the risks of overfitting or 
+underfitting that could occur when relying on a single model. This was 
+clearly evidenced by comparing the performance of the ETFM with the 
+top-performing individual models, namely Extra Trees and CatBoost, 
+across the training, validation, and test sets, as shown in Fig. 2b, c, and 
+2d.
+3.1.4. Online prediction
+An online predictive web application (https://njun6qqj6rwdwpuolu 
+5esg.streamlit.app/) was successfully deployed on the Streamlit plat­
+form using the ETFM model to provide real-time forecasting of CO2 
+adsorption capacity for MgO-based adsorbents. The application featured 
+an intuitive user interface that allowed researchers to input key pa­
+rameters, which included the physical characteristics of the adsorbent 
+(specific surface area, pore volume, pore size, and particle size), 
+experimental conditions (pressure, temperature, and time), and material 
+morphology. Based on the inputs provided by the user, the system 
+employed the pretrained machine learning model to compute and 
+immediately return the predicted CO2 uptake value. The results were 
+displayed both numerically and through a visual gauge, enabling an 
+Table 1 
+TOPSIS calculation results for the six evaluated models.
+Evaluation metrics
+GBRT
+LightGBM
+Extra Trees
+CatBoost
+Random Forest
+XGBoost
+MSE
+0.0000
+0.5731
+0.8288
+1.0000
+0.5605
+0.6650
+RMSE
+0.0000
+0.4771
+0.7582
+1.0000
+0.4647
+0.5709
+MAE
+0.0000
+0.6103
+1.0000
+0.7868
+0.8697
+0.4984
+R2
+0.0000
+0.5731
+0.8288
+1.0000
+0.5605
+0.6652
+Positive ideal solution
+1.0000
+0.4461
+0.1727
+0.1060
+0.4177
+0.4071
+Negative ideal solution
+0.0000
+0.5590
+0.8570
+0.9518
+0.6303
+0.6029
+Comprehensive score index
+0.0000
+0.5561
+0.8323
+0.8998
+0.6014
+0.5969
+Percentage
+0.0000
+0.1595
+0.2387
+0.2581
+0.1725
+0.1712
+Ranking
+6
+5
+2
+1
+3
+4
+Fig. 2. Comparative analysis between the proposed ETFM model, Extra Trees, and CatBoost. (a) Predictive performance of the ETFM model; Performance of the Extra 
+Trees (b), CatBoost (c), and ETFM (d) models across the training, validation, and test sets.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+6 
+intuitive assessment of adsorption performance.
+To ensure the validity of its outputs, permissible ranges for all nu­
+merical input variables were derived from the statistical distribution of 
+the training data. The online interface restricts user inputs to these 
+predefined ranges, thereby ensuring that all prediction queries fall 
+within the domain where the model is empirically validated. This tool 
+offers effective computational support for predicting the performance 
+and facilitating the optimized design of magnesium oxide-based CO2 
+adsorbents, which can enhance the efficiency and specificity of subse­
+quent experimental work. It should be noted that the current imple­
+mentation 
+primarily 
+provides 
+single-point 
+predictions. 
+Future 
+developments are planned to incorporate model-based prediction in­
+terval estimation, which will provide uncertainty quantification and 
+warnings for inputs approaching the boundaries of the training data 
+distribution. This advancement is anticipated to substantially enhance 
+both the robustness of the tool and its utility for decision support.
+3.2. Model interpretation
+3.2.1. Independent feature interpretability analysis
+After excluding the variable “Dopant or modifier,” which was 
+numerically encoded through label encoding and could potentially 
+introduce interpretative bias, a global SHAP analysis and feature 
+importance assessment were conducted with the ETFM model (Fig. 3). 
+The feature importance decomposition indicated that morphological 
+information was the most significant contributor, accounting for 43.8% 
+of the total influence. Among these morphological features, the Granular 
+(23.0%) and Cube (9.6%) morphologies exerted the strongest influence, 
+followed by the Flower-like (6.5%) and Flake (3.8%) morphologies. In 
+contrast, the Rod-shaped (0.4%), Sphere (0.3%), Nest-like (0.1%), and 
+Block morphologies, the latter contributing approximately 0%, exhibi­
+ted negligible effects. This importance ranking corresponded closely to 
+the average predicted CO2 uptake for each morphological category. The 
+Granular morphology exhibited the highest uptake capacity at 8.868 
+mmol/g. This was followed by the Flower like morphology with 6.817 
+mmol/g and the Cube morphology with 4.667 mmol/g. In comparison, 
+the Block and Rod shaped morphologies demonstrated significantly 
+lower capacities of 0.710 mmol/g and 0.928 mmol/g, respectively 
+(Fig. 3b).
+The SHAP summary plot (Fig. 3a) reveals the directional influence of 
+key variables. For morphological categories including Granular and 
+Cube, samples with a value of 1, represented in purple, clustered pre­
+dominantly in the positive SHAP value region. Analysis of SHAP dis­
+tributions (Fig. S6a) further shows that Granular, Flower-like, and Cube 
+morphologies exhibit broader distributions with higher median values, 
+suggesting significant contributions and potential feature interactions. 
+In contrast, Flake and Sphere morphologies show more constrained in­
+fluence, while Nest-like, Block, and Rod-shaped contributions are 
+negligible. These results consistently underscore the pronounced 
+advantage of Granular morphology. An interesting discrepancy was 
+observed: although Flower-like morphology demonstrates high pre­
+dicted uptake (Fig. S6b), its SHAP contribution remains modest, possibly 
+due to its sample distribution or synergistic interactions with other 
+features. Mechanistically, the superior performance of Granular 
+morphology is attributed to its high surface area and abundant alkaline 
+sites (Ding et al., 2015), whereas the hierarchical porous structure of 
+Flower-like morphology facilitates synergistic effects between gas 
+diffusion and surface reactions (Jin et al., 2020). Conversely, Block and 
+Rod-shaped morphologies underperform due to structural limitations 
+that restrict active site accessibility.
+Process conditions were secondary in importance with a total 
+contribution of 37.4%, primarily from time (23.3%) and temperature 
+(14.1%) (Fig. 3b). The negligible contribution of pressure (0.1%) is 
+attributed to its limited variability in the dataset, as most experiments 
+were conducted under atmospheric conditions. Although time was the 
+most influential individual variable, its global marginal effect was pre­
+dominantly negative yet distinctly non-monotonic (Fig. 4a). A brief in­
+crease in adsorption capacity within an intermediate time range was 
+observed, followed by a gradual decline. This pattern confirms that the 
+model successfully captured the inherent nonlinearity of adsorption 
+kinetics. SHAP analysis revealed a consistently negative trend in the 
+values associated with processing time, indicating an inverse statistical 
+relationship between this variable and adsorption capacity within the 
+experimental dataset of this study. This finding suggests that adsorbents 
+demonstrating higher performance in this context typically exhibited 
+faster adsorption kinetics. Temperature exhibited a clear positive cor­
+relation with SHAP values (Fig. 3a), where higher (purple) and lower 
+(green) temperatures corresponded to positive and negative SHAP 
+values, respectively. As illustrated in Fig. 4b, the dependence followed a 
+distinct unimodal pattern: the influence was negative at low tempera­
+tures, turned positive to reach a peak at intermediate temperatures, and 
+became negative again upon further heating. This pattern signifies a 
+shift in the rate-controlling mechanism of MgO carbonation. At lower 
+temperatures, physical adsorption dominates, while chemical adsorp­
+tion prevails as temperature rises. A moderate temperature increase 
+enhances reaction kinetics; however, excessively high temperatures ul­
+timately inhibit the reaction due to the increasingly unfavorable Gibbs 
+free energy of carbonation (Ji et al., 2020). The analysis further 
+Fig. 3. SHAP analysis of the ETFM model. (a) SHAP values and feature importance ranking; (b) Distribution of feature importance.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+7 

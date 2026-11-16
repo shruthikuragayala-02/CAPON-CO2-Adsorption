@@ -1,0 +1,554 @@
+elucidated the nuanced nature of variable influences. The identified 
+dependence of adsorption capacity on temperature aligned with 
+well-established physical mechanisms, thereby reinforcing the reli­
+ability of the model. Conversely, the relationship with processing time 
+predominantly reflected a strong intrinsic statistical correlation within 
+the data. This correlation points to a link between superior adsorbent 
+performance and rapid kinetics, rather than implying a direct causal 
+physical influence of time duration itself.
+The combined contribution of pore structure variables was 15.3%, 
+distributed among pore volume (6.5%), pore size (6.2%), and specific 
+surface area (2.5%) (Fig. 3b). Pore volume and pore size exhibited 
+progressive transitions from low to high values, indicating their positive 
+influence on adsorption performance. In contrast, the SHAP values for 
+SBET and particle size clustered near zero, consistent with their low 
+importance. The SHAP dependence for SBET (Fig. 4c) revealed a coun­
+terintuitive pattern: a positive marginal effect in the low-value region 
+that rapidly decreased, turned negative, and plateaued at high values. 
+This can be attributed to the ineffective accessibility of surface area in 
+materials with ultra-micropores, tortuous channels, or sintered pores, 
+where the nominal SBET does not equate to the effectively accessible area 
+(Heo and Park, 2017). This aligns with explainable ML studies in other 
+adsorption systems, which have similarly captured the diminishing 
+marginal effect of SBET (Teng and Shan, 2024; Xie et al., 2023). 
+Conversely, Vpore showed a predominantly monotonic positive rela­
+tionship with SHAP values (Fig. 4d), underscoring its critical role. Larger 
+pore volumes provide more internal space and adsorption sites, facili­
+tating CO2 access and accommodation (Heo and Park, 2017). Further­
+more, dpore exhibited a non-monotonic dependence with an optimal 
+mesoporous range (Fig. 4e), as evidenced by a significant positive peak 
+at medium sizes, flanked by negative influences at both lower and higher 
+values.
+Fig. 4f indicates an overall negative influence of particle size on the 
+predicted adsorption capacity, suggesting a general preference for 
+smaller particles. This was attributed to the increased specific surface 
+area and exposure of active sites resulting from particle size reduction, a 
+mechanism conducive to enhanced adsorption (Hiremath et al., 2017). A 
+more nuanced analysis revealed that the most negative SHAP values 
+occurred within the small-to-medium size range, indicating the greatest 
+marginal gains in capacity from size reduction in this interval. This 
+negative influence gradually attenuated to near zero with increasing 
+particle size. This attenuation suggests a shift in the dominant adsorp­
+tion mechanism from surface reaction control to other rate-limiting 
+steps, such as intraparticle diffusion. Beyond a certain size, particle 
+variation ceases to be a primary performance constraint, which aligns 
+with its diminished importance in the model.
+PDP and ALE analyses were employed to evaluate dopant effects 
+(Fig. 5). PDP quantified the average predicted adsorption capacity for 
+each dopant, while ALE measured the local deviation from the average, 
+with positive (enhancement) and negative (suppression) values. Using 
+the undoped adsorbent (PDP = 2.884, ALE = −0.562) as a baseline, most 
+dopants exhibited higher PDP values, confirming that doping generally 
+enhanced CO2 adsorption and validated the material design strategy. 
+However, ALE values varied considerably among dopants, indicating 
+mechanistic diversity in their functional roles.
+Surfactants (SDS, CTAB, PPV) demonstrated both high PDP values 
+(4.16 - 4.23 mmol/g) and stable positive ALE values (0.59 - 0.60). These 
+modifiers enhanced the average CO2 adsorption capacity by improving 
+key adsorbent properties such as specific surface area, pore architecture, 
+and alkaline site distribution, thereby inducing consistent localized 
+enhancement effects (Firmansyah et al., 2025). Similarly, amine-based 
+reagents (APTES, DETA, PEI) exhibited closely clustered high PDP 
+values (4.18 - 4.23 mmol/g) and remarkably consistent ALE values 
+(0.597 - 0.600). This strong agreement indicated that amine incorpo­
+ration provided numerous homogeneous chemical adsorption sites for 
+CO2 capture. The underlying mechanism involved amine coupling and 
+structural penetration, which enlarged the pore size and volume of the 
+MgO matrix, thereby exposing more functionalized adsorption sites 
+(Alkadhem et al., 2020).
+The coefficient for each dopant, as used in the categorical names, 
+refers to its molar ratio with respect to MgO. Metal oxide dopants, 
+Fig. 4. SHAP dependence plots. (a) Time; (b) Temperature; (c) SBET; (d) Vpore; (e) dpore; (f) Particle size.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+8 
+specifically 0.33CeO2 and 0.33Al2O3, exhibited superior performance. 
+Their PDP values (4.264 and 4.279 mmol/g, respectively) were among 
+the highest, indicating a strong positive effect on CO2 adsorption. 
+Notably, their ALE values (0.758 and 0.756) substantially exceeded 
+those of amine reagents and most surfactants, suggesting that metal 
+oxide doping constituted a highly effective and reliable strategy for 
+enhancing capacity. These oxides improved CO2 adsorption by 
+enhancing the basicity and specific surface area of MgO (Yu et al., 2018). 
+Functioning as structural promoters, they inhibited MgO sintering at 
+elevated temperatures, thereby preserving the material's specific surface 
+area and providing more accessible sites. Furthermore, strong basic sites 
+with unique electronic structures likely formed at the metal oxide-MgO 
+interface, which enhanced the affinity and activation capacity toward 
+CO2 molecules (Zhao et al., 2025b).
+Analysis of transition metal doping revealed a non-monotonic rela­
+tionship with a well-defined optimal molar ratio. Using Mn as an 
+example, the 0.1 M ratio condition yielded the highest PDP (4.321 
+mmol/g) and a strong positive ALE (0.739). However, increasing the 
+ratio to 0.15 substantially reduced the ALE to 0.112 (PDP = 4.053 
+mmol/g), while decreasing it to 0.05 resulted in a PDP near baseline 
+(3.275 mmol/g) and a negative ALE (-0.406), indicating an inhibitory 
+effect. In contrast, carbon-doped samples (0.359C, 0.397C, 0.382C) 
+exhibited tightly clustered PDP values (4.225 mmol/g) and stable pos­
+itive ALE values (0.602 - 0.609), indicating consistent performance 
+enhancement. This was attributed to the formation of highly dispersed 
+MgO nanocrystallites with increased specific surface area and the in-situ 
+carbon matrix functioning as an effective stabilizer that inhibited MgO 
+crystallite agglomeration (Othman et al., 2021).
+Alkali metal nitrate dopants exhibited complex performance effects. 
+Their PDP values spanned a broad spectrum (3.05 - 4.408 mmol/g), 
+while ALE values ranged from significantly negative (−0.535) to 
+strongly positive (0.821), indicating high sensitivity to the specific 
+cation type, ratio, and total concentration. High-performance composi­
+tions, such as 0.1(0.3Li0.18Na0.52K)NO3 (PDP = 4.408, ALE = 0.625) 
+and 0.5(0.375Li0.075Na0.55K) - 0.15NaK (PDP = 4.243, ALE = 0.821), 
+demonstrated exceptional capacity and robust local enhancement. In 
+contrast, low-concentration doping formulations such as 0.005K (PDP =
+2.938 mmol/g, ALE = −0.535) or imbalanced ratios performed near or 
+below baseline, which was attributed to insufficient alkali content 
+failing to effectively reduce the adsorption energy of key MgO crystal 
+planes (Gui et al., 2024). The CO2 adsorption performance of the 
+xFe-(0.3Li0.6Na0.1K)NO3 system showed a non-monotonic dependence 
+on iron content. The PDP value peaked at 4.361 mmol/g for the 0.1 M 
+ratio and generally declined as the content deviated from this optimum 
+(0.02 - 0.8). The ALE values remained positive (0.562 - 0.800) for Fe 
+contents of 0.1 - 0.8 but turned significantly negative (−0.489) at 0.02. 
+This trend suggested an optimal Fe doping window (approx. 0.1 - 0.4 
+mol%) that synergized with the nitrate matrix. Within this window, Fe 
+species enhanced charge transfer and strengthened oxygen atom 
+bonding on the MgO surface, promoting preferential binding with acti­
+vated CO2 species (CO) (Gong et al., 2023). Conversely, insufficient Fe 
+content provided inadequate catalytic effect, while excess Fe likely 
+induced particle agglomeration or pore blockage, diminishing the pro­
+motional effect.
+Fig. 5. PDP and ALE plot for the input variable “Dopant or modifier".
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+9 
+3.2.2. Interpretability analysis of interaction effects
+Analysis of the synergistic effects between temperature and time 
+revealed that the PDP plot reached a maximum adsorption capacity of 
+4.5 mmol/g under moderate temperatures (200 - 400 ◦C) combined with 
+adsorption times of 100 - 250 min (Fig. 6a). This finding was corrobo­
+rated by ALE analysis, which showed significant positive deviations 
+within this parameter range (Fig. 7a), indicating that such conditions 
+not only achieved superior absolute adsorption performance but also 
+generated relative gains exceeding the baseline. The moderate temper­
+ature range represented an optimal balance between reaction driving 
+force and intrinsic activity in gas - solid reactions, while appropriate 
+durations ensured sufficient CO2 diffusion and the attainment of 
+adsorption equilibrium. Conversely, temperatures exceeding 450 ◦C 
+likely increased the Gibbs free energy and weakened the reaction driving 
+force, whereas temperatures below 150 ◦C primarily facilitated physical 
+adsorption. Adsorption times shorter than 50 min prevented the system 
+from reaching equilibrium, while prolonged durations beyond 250 min 
+could induce structural fatigue in the adsorbent. These extreme condi­
+tions collectively led to a notable decline in adsorption performance.
+A significant structural dependency was observed in the interaction 
+between pore volume and particle size. PDP analysis indicated that 
+combining large pore volume (>0.6 cm3/g) with moderate particle size 
+(2000 - 8000 nm) yielded a high adsorption capacity of 7.0 mmol/g 
+(Fig. 6b), consistent with porous material adsorption theory. Sufficient 
+pore volume provides ample space for CO2 accommodation, while 
+moderate particle size balances diffusion path length against external 
+surface area. ALE analysis further revealed a positive deviation for small 
+particle sizes (<1000 nm) combined with moderate pore volume (0.4 - 
+0.8 cm3/g) (Fig. 7b), suggesting enhanced adsorption kinetics from 
+shortened diffusion paths. Notably, even with optimal particle size, 
+insufficient pore volume (<0.4 cm3/g) hindered efficient adsorption, 
+underscoring the dominant role of pore volume. Conversely, excessively 
+large particles (>8000 nm) likely limited adsorption rates due to 
+extended diffusion paths, highlighting the necessity of precise structural 
+parameter matching.
+Analysis of temperature and particle size interactions revealed a 
+complex coupling between thermodynamic and structural parameters. 
+PDP analysis identified an optimal range of medium temperatures (100 - 
+300 ◦C) and medium particle sizes (2000 - 6000 nm), achieving an 
+adsorption capacity of approximately 5.0 mmol/g (Fig. 6c). In contrast, 
+ALE analysis showed a negative deviation within this same region 
+(Fig. 7c). This discrepancy reflected performance evaluations based on 
+different reference frameworks: while this parameter combination 
+yielded high absolute adsorption, its relative performance gain was 
+suboptimal. Further analysis indicated that combining high temperature 
+(>600 ◦C) with small particle size (<1000 nm) exhibited a weakly 
+positive ALE deviation. This was attributed to the synergy between the 
+rapid thermal response of small particles and enhanced activation at 
+elevated temperatures. Although the absolute adsorption capacity 
+remained moderate, this configuration still provided improvement 
+relative to the baseline.
+The particle size-time interaction was weaker than other parameter 
+pairs. Both PDP and ALE analyses identified medium particle size (1000 
+- 3000 nm) with moderate duration (100 - 250 min) as optimal (Fig. 6d 
+and 7d), achieving 3.0 mmol/g adsorption capacity with positive ALE 
+deviation. This suggests medium particles balance diffusion resistance 
+with surface area utilization, while sufficient duration enables equilib­
+rium. Conversely, extended time (>300 min) with large particles 
+(>5000 nm) showed strong negative deviation, attributed to slow 
+diffusion kinetics and reduced efficiency from excessive contact.
+The temperature-pore volume interaction showed the strongest 
+synergy. Combining moderate temperature (200 - 400 ◦C) with moder­
+ate pore volume (0.4 - 0.8 cm3/g) yielded 5.5 mmol/g capacity (Fig. 6e) 
+with significant positive ALE deviation (Fig. 7e), highlighting the crucial 
+thermodynamics-structure match. Optimal temperature activates basic 
+sites while adequate pore volume provides sufficient sites without sur­
+face density dilution. Performance declined under low temperature 
+(<150 ◦C) with small pores (<0.3 cm3/g) due to insufficient sites and 
+Fig. 6. PDP of numerical features for the ETFM model. (a) Temperature-Time; (b) Vpore-Particle size; (c) Temperature-Particle size; (d) Particle size-Time; (e) 
+Temperature-Vpore; (f) Vpore-Time.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+10 
+restricted diffusion, and at high temperature (>450 ◦C) with large pores 
+(>0.9 cm3/g) due to compromised carbonation kinetics.
+Fig. 7. ALE plots of numerical features for the ETFM model. (a) Temperature-Time; (b) Vpore-Particle size; (c) Temperature-Particle size; (d) Particle size-Time; (e) 
+Temperature-Vpore; (f) Vpore-Time.
+Fig. 8. Conditional PDP. (a) Morphology-temperature; (b) morphology-time.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+11 
+Pore volume-time analysis revealed fundamental adsorption 
+kinetics-structure relationships. PDP and ALE analyses demonstrated 
+that moderate pore volume (0.4 - 0.8 cm3/g) with shorter durations (50 - 
+150 min) achieved 4.5 mmol/g adsorption capacity with positive devi­
+ation, indicating enhanced mass transfer efficiency (Fig. 6f and 7f). 
+Notably, extended time (>200 min) with low pore volume (<0.3 cm3/g) 
+showed pronounced negative ALE deviation, attributed to prolonged 
+diffusion constraints in restricted pores. These findings provide specific 
+guidance for avoiding suboptimal parameter combinations in adsorption 
+system design.
+The interaction of morphology with temperature and time revealed 
+distinct adsorption characteristics (Fig. 8). Granular morphology 
+exhibited a unique bimodal thermal response, maintaining high capacity 
+(nearly 8 mmol/g at <100 ◦C; 7 mmol/g at 300 ◦C) due to abundant 
+active sites and stable pores. In contrast, Cube morphology showed a 
+unimodal distribution, achieving 7.5 mmol/g at low temperatures but 
+declining to 4 mmol/g above 300 ◦C, indicating better suitability for 
+low-temperature operation. Flower-like morphology maintained stable 
+but limited capacity (about 3 mmol/g) across temperatures, demon­
+strating good thermal tolerance. Other morphologies (Block, Flake) 
+showed low, steady performance with minimal temperature sensitivity.
+Temporally, Granular morphology demonstrated sustained growth 
+to 8 mmol/g at 100 min with excellent stability, indicating favorable 
+kinetics. Cube morphology displayed a distinct optimal window peaking 
+at 150 min (6.5 mmol/g) but declined significantly beyond 250 min. 
+Flower-like morphology showed prominent short-term performance 
+(5.5 mmol/g at <150 min) but decreased to 3 mmol/g under prolonged 
+operation, suggesting suitability for rapid adsorption applications. Other 
+morphologies maintained consistently low capacities (<3 mmol/g) 
+throughout the time range.
+Fig. 9a presented the PDP for various doping strategies under varying 
+temperature and time conditions. Temperature response analysis 
+revealed distinct performance stratification, with high-performance 
+systems (alkali metal nitrate, Fe-based nitrate, and metal/oxide 
+doping) achieving peak capacity (approximately 5.5 mmol/g) in the 200 
+- 350 ◦C range, representing 100% improvement over baseline. This 
+optimization was attributed to dopants modulating activation energy 
+barriers and optimizing CO2 interaction strength with MgO surfaces. 
+System-specific variations were observed: Fe-based nitrate doping 
+required >200 ◦C for effective activation, while multi-metal composite 
+doping maintained efficiency across 250-350 ◦C, indicating enhanced 
+thermal stability from component synergy.
+Temporal analysis (Fig. 9b) showed high-performance doping sys­
+tems 
+achieved 
+rapid 
+saturation, 
+with 
+compositions 
+0.1 
+(0.3Li0.18Na0.52K)NO3 and 0.1Fe-(0.3Li0.6Na0.1K)NO3 reaching 5.5 - 
+6.0 mmol/g within 150 min and maintaining stability, with initial rates 
+150% higher than baseline. This enhancement derived from micro­
+structure modifications: alkali nitrate doping formed solid solutions 
+optimizing pore channels, while Fe-based doping altered surface elec­
+tronic structures to reduce activation energy. Kinetic profiles varied 
+significantly Fe-based systems showed rapid initial adsorption suited for 
+short-term capture, while multi-metal systems exhibited gradual pro­
+gression ideal for continuous operation, providing scientific basis for 
+material selection according to process requirements.
+3.3. Limitations and future work
+While the ETFM framework developed in this study demonstrated 
+strong predictive performance and mechanistic interpretability, several 
+limitations were identified, highlighting valuable directions for future 
+research. The predictive accuracy and interpretability of the model are 
+inherently contingent upon the material systems and process parameter 
+ranges encompassed by the current training dataset. As a data-driven 
+approach, its reliability for extrapolation to novel material composi­
+tions or extreme operating conditions remains uncertain. Although 
+ensemble modeling was employed to enhance robustness, the extrapo­
+lative capability of the framework necessitates further validation using 
+independent, external datasets under such challenging scenarios. 
+Regarding mechanistic interpretation, existing methods face difficulties 
+in quantitatively disentangling complex interaction effects that involve 
+high-cardinality categorical variables, such as complex doping systems. 
+This limitation constrains a more granular and holistic understanding of 
+Fig. 9. Conditional PDP. (a) Doped-modified vs Temperature; (b) Doped-modified vs Time.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+12 
+the underlying adsorption mechanisms. Furthermore, the current 
+version of the online prediction tool provides only point estimates 
+without integrated uncertainty quantification.
+To address these limitations, future work will prioritize several key 
+objectives. The expansion and refinement of the dataset are essential to 
+ensure more balanced coverage of critical variable combinations and to 
+mitigate potential biases. More rigorous validation protocols should be 
+implemented to thoroughly assess the real-world generalizability of the 
+model. There is also a need to explore or develop novel analytical 
+methods capable of quantifying complex interactions among high- 
+cardinality categorical variables, which would enable deeper mecha­
+nistic insight. Finally, the prediction tool will be enhanced through the 
+incorporation of confidence interval estimation and out-of-domain 
+detection features. These advancements are aimed at evolving the 
+framework into a more robust and intelligent decision-support system 
+for the accelerated development of CO2 adsorbents.
+4. Conclusion
+This study developed and validated a machine learning framework 
+that integrated the entropy -TOPSIS methodology for the accurate pre­
+diction of the CO2 adsorption capacity of MgO-based adsorbents. The 
+results demonstrated that the ETFM model achieved exceptional pre­
+dictive performance on the test set, with an R2 value of 0.9903, and MSE, 
+RMSE, and MAE values of 0.361, 0.6008, and 0.2544, respectively. This 
+performance signifies a substantial enhancement in both prediction 
+accuracy and robustness. Interpretability analysis via SHAP identified 
+material morphology as the most influential feature, contributing 43.8% 
+to the model output, with granular morphology demonstrating superior 
+performance. Process parameters, namely adsorption time and temper­
+ature, as well as pore structure characteristics, including pore volume 
+and size, were also determined to be key variables. In contrast, the 
+specific surface area exhibited a non-monotonic relationship with the 
+adsorption capacity, characterized by decreasing marginal effects. These 
+findings underscore the critical importance of engineering an effective 
+pore architecture over the mere maximization of the specific surface 
+area. Furthermore, an in-depth analysis of the complex nonlinear and 
+interaction effects among the variables was conducted using PDP and 
+ALE. This analysis identified critical parameter ranges conducive to 
+performance optimization. For instance, the synergistic combination of 
+a moderate temperature range of 200 - 400 ◦C with an adsorption 
+duration of 100 - 250 min was identified as optimal for maximizing the 
+adsorption capacity. Moreover, this work systematically evaluated the 
+efficacy and mechanisms of various doping and modification strategies. 
+The evaluation established that metal oxides, such as CeO2 and Al2O3, 
+and alkali metal nitrates with specific molar ratios constitute optimal 
+choices for enhancing performance. Conversely, transition metal doping 
+is characterized by a narrow optimal concentration window.
+CRediT authorship contribution statement
+Lin Fan: Writing – original draft, Data curation, Conceptualization. 
+Yan He: Writing – original draft, Resources. Yunfeng Mo: Supervision, 
+Project administration. Yiming Cao: Validation, Investigation.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgements
+This work is financially supported by the Basic Research Project of 
+Liaoning Province Education Department (No. LJ212510148036 and 
+No. LJ212410148026) and Liaoning Provincial Science and Technology 
+Plan Joint Plan (Natural Science Foundation-General Program) (No. 
+2025-MSLH-446).
+Appendix A. Supplementary data
+Supplementary data to this article can be found online at https://doi. 
+org/10.1016/j.envres.2026.124126.
+Data availability
+Data will be made available on request.
+References
+Alhalawani, G., Fajri, K., Onaizi, S.A., 2025. Recent advances in CO2 capture using MgO- 
+based nanomaterials: a comprehensive review. Fuel 381, 133608. https://doi.org/ 
+10.1016/j.fuel.2024.133608.
+Alkadhem, A.M., Elgzoly, M.A.A., Onaizi, S.A., 2020. Novel amine-functionalized 
+magnesium oxide adsorbents for CO2 capture at ambient conditions. J. Environ. 
+Chem. Eng. 8, 103968. https://doi.org/10.1016/j.jece.2020.103968.
+Alkadhem, A.M., Elgzoly, M.A.A., Alshami, A., Onaizi, S.A., 2021. Kinetics of CO2 
+capture by novel amine-functionalized magnesium oxide adsorbents. Colloids Surf., 
+A 616, 126258. https://doi.org/10.1016/j.colsurfa.2021.126258.
+Application of machine learning in predicting the adsorption capacity of organic 
+compounds onto biochar and resin. Environ. Res. 208, 2022, 112694. https://doi. 
+org/10.1016/j.envres.2022.112694.
+Chai, K.H., Leong, L.K., Sethupathi, S., Chong, K.C., Yang, T.C.-K., Ong, S.P., Yap, Y.H., 
+2024. Carbon capture from low CO2 concentration stream through ternary alkali 
+metal nitrates promotion of MgO sorbents at intermediate temperature and low 
+space velocity. Chem. Eng. J. Adv. 17, 100578. https://doi.org/10.1016/j. 
+ceja.2023.100578.
+Chen, J., Yang, X., Cui, J., Huo, Y., Xie, J., 2025. Performance optimization and entropy- 
+TOPSIS evaluation of a thermochemical solar thermal power generation system 
+based on packed bed reactor exothermic characteristics. Energy Convers. Manag. 
+336, 119891. https://doi.org/10.1016/j.enconman.2025.119891.
+Dal Pozzo, A., Armutlulu, A., Rekhtina, M., Abdala, P.M., Müller, C.R., 2019. CO2 uptake 
+and cyclic stability of MgO-based CO2 sorbents promoted with alkali metal nitrates 
+and their eutectic mixtures. ACS Appl. Energy Mater. 2, 1295–1307. https://doi.org/ 
+10.1021/acsaem.8b01852.
+Ding, Y.-D., Song, G., Zhu, X., Chen, R., Liao, Q., 2015. Synthesizing MgO with a high 
+specific surface for carbon dioxide adsorption. RSC Adv. 5, 30929–30935. https:// 
+doi.org/10.1039/C4RA15127E.
+Ding, Y., Zhao, X., Chen, L., Ma, L., Liao, Q., Zhu, X., Wang, H., 2021. Hydration 
+activation of MgO pellets for CO2 adsorption. Ind. Eng. Chem. Res. 60, 5310–5318. 
+https://doi.org/10.1021/acs.iecr.0c05462.
+Ding, J., Li, Y., Zhang, X., Zhang, Z., Zhang, Y., Wang, Y., Yu, G., Wang, Z., Guo, X., 
+Wang, Y., Yu, T., 2025. Study on the homologous effects on the performance of alkali 
+metal-doping MgO-based adsorbents for CO2 capture. Sep. Purif. Technol. 355, 
+129673. https://doi.org/10.1016/j.seppur.2024.129673.
+Fan, L., Wang, D., Yu, H., Guo, J., He, Y., 2025. Amorphous-dominated MgO hollow 
+spheres enhanced fluoride adsorption: mechanism analysis and machine learning 
+prediction. J. Chem. Phys. 162, 14702. https://doi.org/10.1063/5.0246431.
+Figueiredo, A., Soria, M.A., Madeira, L.M., Rocha, C., 2024. Preparation and 
+characterization of materials for low- to intermediate-temperature CO2 adsorption. 
+Processes 12, 2403. https://doi.org/10.3390/pr12112403.
+Firmansyah, S.N., Dwiatmoko, A.A., Yunarti, R.T., 2025. Hydrothermal synthesis of high 
+surface area magnesium oxide (MgO) using ionic surfactant and their capacity as 
+CO2 adsorbent. Vacuum 238, 114188. https://doi.org/10.1016/j. 
+vacuum.2025.114188.
+Gao, W., Zhou, T., Gao, Y., Louis, B., O'Hare, D., Wang, Q., 2017a. Molten salts-modified 
+MgO-based adsorbents for intermediate-temperature CO2 capture: a review. 
+J. Energy Chem. 26, 830–838. https://doi.org/10.1016/j.jechem.2017.06.005.
+Gao, W., Zhou, T., Louis, B., Wang, Q., 2017b. Hydrothermal fabrication of high specific 
+surface area mesoporous MgO with excellent CO2 adsorption potential at 
+intermediate temperatures. Catalysts 7, 116. https://doi.org/10.3390/ 
+catal7040116.
+Gong, F., Huang, Z., Wei, X., Liu, S., Lu, J., Ding, J., Wang, W., 2023. MgO promoted by 
+Fe2O3 and nitrate molten salt for fast and enhanced CO2 capture: experimental and 
+DFT investigation. Sep. Purif. Technol. 307, 122766. https://doi.org/10.1016/j. 
+seppur.2022.122766.
+Gui, C., Wang, Z., Ling, C., Tang, Z., 2024. Molten salt-promoted MgO-based CO2 
+adsorbents: selective adsorption on polycrystalline surfaces. J. Environ. Chem. Eng. 
+12, 111972. https://doi.org/10.1016/j.jece.2024.111972.
+Guo, Y., Tan, C., Wang, P., Sun, J., Li, W., Zhao, C., Lu, P., 2020. Structure-performance 
+relationships of magnesium-based CO2 adsorbents prepared with different methods. 
+Chem. Eng. J. 379, 122277. https://doi.org/10.1016/j.cej.2019.122277.
+Heo, Y.-J., Park, S.-J., 2017. Facile synthesis of MgO-Modified carbon adsorbents with 
+Microwave- assisted methods: effect of MgO particles and porosities on CO2 capture. 
+Sci. Rep. 7, 5653. https://doi.org/10.1038/s41598-017-06091-5.
+Hiremath, V., Shavi, R., Gil Seo, J., 2017. Mesoporous magnesium oxide nanoparticles 
+derived via complexation-combustion for enhanced performance in carbon dioxide 
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+13 
+capture. J. Colloid Interface Sci. 498, 55–63. https://doi.org/10.1016/j. 
+jcis.2017.03.046.
+Hodson, T.O., 2022. Root-mean-square error (RMSE) or mean absolute error (MAE): 
+when to use them or not. Geosci. Model Dev. (GMD) 15, 5481–5487. https://doi. 
+org/10.5194/gmd-15-5481-2022.
+Ji, G., Yang, H., Memon, M.Z., Gao, Y., Qu, B., Fu, W., Olguin, G., Zhao, M., Li, A., 2020. 
+Recent advances on kinetics of carbon dioxide capture using solid sorbents at 
+elevated temperatures. Appl. Energy 267, 114874. https://doi.org/10.1016/j. 
+apenergy.2020.114874.
+Jiang, M., Fu, W., Wang, Y., Xu, D., Wang, S., 2024. Machine-learning-driven discovery 
+of metal–organic framework adsorbents for hexavalent chromium removal from 
+aqueous environments. J. Colloid Interface Sci. 662, 836–845. https://doi.org/ 
+10.1016/j.jcis.2024.02.084.
+Jin, S., Bang, G., Lee, C.-H., 2020. Unusual morphology transformation and basicity of 
+magnesium oxide controlled by ageing conditions and its carbon dioxide adsorption. 
+J. CO2 Util. 41, 101273. https://doi.org/10.1016/j.jcou.2020.101273.
+Kwon, S.H., Hiremath, V., Nanoti, A., Kang, S.G., Seo, J.G., Lee, S.G., 2023. MgO-based 
+composites for high pressure CO2 capture: a first-principles theoretical and 
+experimental investigation. Korean J. Chem. Eng. 40, 2990–2996. https://doi.org/ 
+10.1007/s11814-023-1536-6.
+Li, P., Liu, W., Dennis, J.S., Zeng, H.C., 2017. Synthetic architecture of MgO/C 
+nanocomposite from hierarchical-structured coordination polymer toward enhanced 
+CO2 capture. ACS Appl. Mater. Interfaces 9, 9592–9602. https://doi.org/10.1021/ 
+acsami.6b14960.
+Li, S., Guo, N., Zhu, D., Jiang, D., Chen, Z., Chen, S., Sun, Z., Wang, J., 2024. Enhanced 
+CO2 capture and stability of MgO modified with alkali metal nitrates and carbonates 
+at moderate temperature. J. Chem. Technol. Biotechnol. 99, 2289–2299. https://doi. 
+org/10.1002/jctb.7717.
+Liu, C., Balasubramanian, P., Li, F., Huang, H., 2024a. Machine learning prediction of 
+dye adsorption by hydrochar: parameter optimization and experimental validation. 
+J. Hazard. Mater. 480, 135853. https://doi.org/10.1016/j.jhazmat.2024.135853.
+Liu, J., Zhao, J., Du, J., Peng, S., Tan, S., Zhang, W., Yan, X., Wang, H., Lin, Z., 2024b. 
+Machine learning predicts heavy metal adsorption on iron (oxyhydr)oxides: a 
+combined insight into the adsorption efficiency and binding configuration. Sci. Total 
+Environ. 950, 175370. https://doi.org/10.1016/j.scitotenv.2024.175370.
+Liu, C., Balasubramanian, P., Nguyen, X.C., An, J., Praneeth, S., Zhang, P., Huang, H., 
+2025. Enhanced machine learning prediction of biochar adsorption for dyes: 
+parameter optimization and experimental validation. Carbon Res. 4, 46. https://doi. 
+org/10.1007/s44246-025-00213-9.
+Lu, Y., Guo, Y., Zhang, Q., Zhang, C., Xu, S., Zhang, J., 2025. Unlocking adsorption 
+potential: machine-learning-assisted design of doped magnesium oxide structures for 
+CO2 capture. ACS Sustainable Chem. Eng. 13, 8969–8987. https://doi.org/10.1021/ 
+acssuschemeng.5c01206.
+Mn-promoted MgO adsorbents with boosted CO2 uptake at intermediate temperature. 
+Sep. Purif. Technol. 375, 2025, 133815. https://doi.org/10.1016/j. 
+seppur.2025.133815.
+Nguyen, D.A., Nguyen, V.B., Jang, A., 2024. Ultrahigh-porosity Ranunculus-like MgO 
+adsorbent coupled with predictive deep belief networks: a transformative method for 
+phosphorus treatment. Water Res. 249, 120930. https://doi.org/10.1016/j. 
+watres.2023.120930.
+Niu, X., Feng, Y., Xu, Y., Yang, W., 2021. Synthesis of hollow Al-doped MgO spheres via a 
+sacrificial templating method for enhanced CO2 adsorption. J. Nat. Gas Sci. Eng. 88, 
+103814. https://doi.org/10.1016/j.jngse.2021.103814.
+Othman, F.E.C., Yusof, N., Samitsu, S., Abdullah, N., Hamid, M.F., Nagai, K., Abidin, M. 
+N.Z., Azali, M.A., Ismail, A.F., Jaafar, J., Aziz, F., Salleh, W.N.W., 2021. Activated 
+carbon nanofibers incorporated metal oxides for CO2 adsorption: effects of different 
+type of metal oxides. J. CO2 Util. 45, 101434. https://doi.org/10.1016/j. 
+jcou.2021.101434.
+Perera, H.C.S., Gurunanthanan, V., Singh, A., Mantilaka, M.M.M.G.P.G., Das, G., Arya, S., 
+2024. Magnesium oxide (MgO) nanoadsorbents in wastewater treatment: a 
+comprehensive review. J. Magnesium Alloys 12, 1709–1773. https://doi.org/ 
+10.1016/j.jma.2024.05.003.
+Puggini, L., McLoone, S., 2018. An enhanced variable selection and isolation forest based 
+methodology for anomaly detection with OES data. Eng. Appl. Artif. Intell. 67, 
+126–135. https://doi.org/10.1016/j.engappai.2017.09.021.
+Ribeiro, C., Freitas, A.A., 2021. A data-driven missing value imputation approach for 
+longitudinal datasets. Artif. Intell. Rev. 54, 6277–6307. https://doi.org/10.1007/ 
+s10462-021-09963-5.
+Song, G., Ding, Y.-D., Zhu, X., Liao, Q., 2015. Carbon dioxide adsorption characteristics 
+of synthesized MgO with various porous structures achieved by varying calcination 
+temperature. Colloids Surf., A 470, 39–45. https://doi.org/10.1016/j. 
+colsurfa.2015.01.061.
+Tan, C., Guo, Y., Sun, J., Li, W., Zhang, J., Zhao, C., Lu, P., 2020. Structurally improved 
+MgO adsorbents derived from magnesium oxalate precursor for enhanced CO2 
+capture. Fuel 278, 118379. https://doi.org/10.1016/j.fuel.2020.118379.
+Teng, Y., Shan, G., 2024. Interpretable machine learning for materials discovery: 
+predicting CO2 adsorption properties of metal–organic frameworks. APL Mater. 12. 
+https://doi.org/10.1063/5.0222154.
+Trivi˜no, M.L.T., Hiremath, V., Seo, J.G., 2018. Stabilization of NaNO3-promoted 
+magnesium oxide for high-temperature CO2 capture. Environ. Sci. Technol. 52, 
+11952–11959. https://doi.org/10.1021/acs.est.8b04145.
+Wang, X., Jin, Y., Schmitt, S., Olhofer, M., 2023. Recent advances in bayesian 
+optimization. ACM Comput. Surv. 55, 287:1–287:36. https://doi.org/10.1145/ 
+3582078.
+Wu, T., Wang, J., 2020. Deep mining stable and nontoxic hybrid organic–inorganic 
+perovskites for photovoltaics via progressive machine learning. ACS Appl. Mater. 
+Interfaces 12, 57821–57831. https://doi.org/10.1021/acsami.0c10371.
+Xie, C., Xie, Y., Zhang, C., Dong, H., Zhang, L., 2023. Explainable machine learning for 
+carbon dioxide adsorption on porous carbon. J. Environ. Chem. Eng. 11, 109053. 
+https://doi.org/10.1016/j.jece.2022.109053.
+Yu, H., Wang, X., Shu, Z., Fujii, M., Song, C., 2018. Al2O3 and CeO2-promoted MgO 
+sorbents for CO2 capture at moderate temperatures. Front. Chem. Sci. Eng. 12, 
+83–93. https://doi.org/10.1007/s11705-017-1691-6.
+Yu, H., Wang, D., Li, Y., Chen, G., Ma, X., 2024. Explainable molecular simulation and 
+machine learning for carbon dioxide adsorption on magnesium oxide. Fuel 357, 
+129725. https://doi.org/10.1016/j.fuel.2023.129725.
+Yuan, X., Suvarna, M., Low, S., Dissanayake, P.D., Lee, K.B., Li, J., Wang, X., Ok, Y.S., 
+2021. Applied machine learning for prediction of CO2 adsorption on biomass waste- 
+derived porous carbons. Environ. Sci. Technol. 55, 11925–11936. https://doi.org/ 
+10.1021/acs.est.1c01849.
+Yuan, K., Rampal, N., Adapa, S., Evans, B.R., Bracco, J.N., Boebinger, M.G., Stack, A.G., 
+Weber, J., 2024. Iron impurity impairs the CO2 capture performance of MgO: 
+insights from microscopy and machine learning molecular dynamics. ACS Appl. 
+Mater. Interfaces 16, 64233–64243. https://doi.org/10.1021/acsami.4c13597.
+Zare Banadkouki, M.R., 2023. Selection of strategies to improve energy efficiency in 
+industry: a hybrid approach using entropy weight method and fuzzy TOPSIS. Energy 
+279, 128070. https://doi.org/10.1016/j.energy.2023.128070.
+Zhang, J., Fu, K., Wang, D., Zhou, S., Luo, J., 2024. Refining hydrogel-based sorbent 
+design for efficient toxic metal removal using machine learning-bayesian 
+optimization. J. Hazard. Mater. 479, 135688. https://doi.org/10.1016/j. 
+jhazmat.2024.135688.
+Zhao, S., Liu, Q., Wang, Y., Wang, L., Zhang, J., Sun, Z., 2025a. Machine learning-assisted 
+prediction of Mercury removal efficiency of carbon-based adsorbents. Environ. Sci. 
+Technol. 59, 17677–17687. https://doi.org/10.1021/acs.est.5c03148.
+Zhao, Y., Wang, Y., Niu, Y., Bie, X., Chen, R., Li, Q., Zhang, Y., Zhou, H., 2025b. Research 
+progress on strategies to improve the carbon dioxide capture performance of MgO- 
+based adsorbents. J. Fuel Chem. Technol. 53, 1269–1282. https://doi.org/10.1016/ 
+S1872-5813(25)60545-7.
+Zhao, S., Wang, P., Guo, H., Wang, X., Wang, H., Cui, W., 2025c. A new explanation for 
+the synergistic promoted mechanism of nitrate and nitrite anion species for the high 
+performance MgO adsorbent. Sep. Purif. Technol. 356, 129971. https://doi.org/ 
+10.1016/j.seppur.2024.129971.
+L. Fan et al.                                                                                                                                                                                                                                      
+Environmental Research 297 (2026) 124126 
+14 

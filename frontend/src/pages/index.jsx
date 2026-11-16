@@ -1,0 +1,10 @@
+export { LoginPage } from "./LoginPage";
+export { Dashboard } from "./Dashboard";
+export { PredictPage } from "./PredictPage";
+export { BatchPage } from "./BatchPage";
+export { OptimizePage } from "./OptimizePage";
+export { AnalysisPage } from "./AnalysisPage";
+export { HistoryPage } from "./HistoryPage";
+export { SettingsPage } from "./SettingsPage";
+export { HelpPage } from "./HelpPage";
+export { DeveloperPage } from "./DeveloperPage";

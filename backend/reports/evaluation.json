@@ -1,0 +1,1116 @@
+{
+  "dataset": {
+    "n_samples": 345,
+    "n_features": 47,
+    "n_studies": 22,
+    "target_unit": "mg/g",
+    "sha256": "14b0d34ca547acc88851f2d5e140d6f623c58aa976b2db035acdf87eb595f00c",
+    "study_counts": {
+      "1": 4,
+      "2": 6,
+      "3": 25,
+      "4": 13,
+      "5": 5,
+      "6": 6,
+      "7": 10,
+      "8": 2,
+      "9": 9,
+      "10": 6,
+      "11": 7,
+      "12": 78,
+      "13": 47,
+      "14": 16,
+      "15": 20,
+      "16": 19,
+      "17": 20,
+      "18": 6,
+      "19": 13,
+      "20": 4,
+      "21": 4,
+      "22": 25
+    }
+  },
+  "model": {
+    "name": "RandomForest",
+    "version": "mgo-20261107-161120",
+    "best_params": {
+      "n_estimators": 704,
+      "min_samples_split": 20,
+      "min_samples_leaf": 2,
+      "max_features": 0.387573810313962,
+      "max_depth": null
+    },
+    "trained_at_utc": "2026-11-07T16:11:20.564226+00:00",
+    "feature_names": [
+      "active_pct",
+      "is_MgO_CaCO3",
+      "prec_nitrate",
+      "prec_acetate",
+      "prec_carbonate_hydroxide",
+      "prec_hydroxide",
+      "prec_chloride",
+      "prec_commercial",
+      "prec_organic_other",
+      "has_promoter",
+      "promo_nitrate",
+      "promo_nitrite",
+      "promo_carbonate",
+      "promo_hydroxide",
+      "promo_Li",
+      "promo_Na",
+      "promo_K",
+      "promo_n_species",
+      "promo_ratio_first_frac",
+      "syn_calcination_milling",
+      "syn_hydrothermal",
+      "syn_impregnation",
+      "syn_precipitation",
+      "syn_template_sol_gel",
+      "syn_wet_mixing",
+      "pre_gas_He",
+      "pre_flow",
+      "pre_temp",
+      "pre_time",
+      "ads_temp",
+      "ads_time",
+      "ads_CO2_pct",
+      "ads_flow",
+      "ads_diluent_He",
+      "fixed_bed",
+      "surface_area",
+      "pore_volume",
+      "pore_size",
+      "frac_Li",
+      "frac_Na",
+      "frac_K",
+      "frac_NO3",
+      "frac_NO2",
+      "frac_CO3",
+      "frac_tm_min",
+      "ads_minus_Tm_min",
+      "promoter_loading"
+    ],
+    "training_feature_ranges": {
+      "active_pct": {
+        "min": 16.9,
+        "max": 100.0
+      },
+      "is_MgO_CaCO3": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_nitrate": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_acetate": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_carbonate_hydroxide": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_hydroxide": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_chloride": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_commercial": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "prec_organic_other": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "has_promoter": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_nitrate": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_nitrite": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_carbonate": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_hydroxide": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_Li": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_Na": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_K": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "promo_n_species": {
+        "min": 0.0,
+        "max": 4.0
+      },
+      "promo_ratio_first_frac": {
+        "min": 0.1,
+        "max": 0.9
+      },
+      "syn_calcination_milling": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "syn_hydrothermal": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "syn_impregnation": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "syn_precipitation": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "syn_template_sol_gel": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "syn_wet_mixing": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "pre_gas_He": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "pre_flow": {
+        "min": 20.0,
+        "max": 200.0
+      },
+      "pre_temp": {
+        "min": 200.0,
+        "max": 500.0
+      },
+      "pre_time": {
+        "min": 30.0,
+        "max": 180.0
+      },
+      "ads_temp": {
+        "min": 30.0,
+        "max": 400.0
+      },
+      "ads_time": {
+        "min": 10.0,
+        "max": 720.0
+      },
+      "ads_CO2_pct": {
+        "min": 10.0,
+        "max": 100.0
+      },
+      "ads_flow": {
+        "min": 40.0,
+        "max": 110.0
+      },
+      "ads_diluent_He": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "fixed_bed": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "surface_area": {
+        "min": 0.0,
+        "max": 672.0
+      },
+      "pore_volume": {
+        "min": 0.0,
+        "max": 2.19
+      },
+      "pore_size": {
+        "min": 0.0,
+        "max": 157.9
+      },
+      "frac_Li": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_Na": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_K": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_NO3": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_NO2": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_CO3": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "frac_tm_min": {
+        "min": 255.0,
+        "max": 1000.0
+      },
+      "ads_minus_Tm_min": {
+        "min": -675.0,
+        "max": 145.0
+      },
+      "promoter_loading": {
+        "min": 0.0,
+        "max": 83.1
+      }
+    },
+    "missing_values_by_feature": {
+      "active_pct": 0,
+      "is_MgO_CaCO3": 0,
+      "prec_nitrate": 0,
+      "prec_acetate": 0,
+      "prec_carbonate_hydroxide": 0,
+      "prec_hydroxide": 0,
+      "prec_chloride": 0,
+      "prec_commercial": 0,
+      "prec_organic_other": 0,
+      "has_promoter": 0,
+      "promo_nitrate": 0,
+      "promo_nitrite": 0,
+      "promo_carbonate": 0,
+      "promo_hydroxide": 0,
+      "promo_Li": 0,
+      "promo_Na": 0,
+      "promo_K": 0,
+      "promo_n_species": 0,
+      "promo_ratio_first_frac": 146,
+      "syn_calcination_milling": 0,
+      "syn_hydrothermal": 0,
+      "syn_impregnation": 0,
+      "syn_precipitation": 0,
+      "syn_template_sol_gel": 0,
+      "syn_wet_mixing": 0,
+      "pre_gas_He": 0,
+      "pre_flow": 54,
+      "pre_temp": 13,
+      "pre_time": 55,
+      "ads_temp": 0,
+      "ads_time": 13,
+      "ads_CO2_pct": 0,
+      "ads_flow": 82,
+      "ads_diluent_He": 0,
+      "fixed_bed": 0,
+      "surface_area": 119,
+      "pore_volume": 126,
+      "pore_size": 198,
+      "frac_Li": 0,
+      "frac_Na": 0,
+      "frac_K": 0,
+      "frac_NO3": 0,
+      "frac_NO2": 0,
+      "frac_CO3": 0,
+      "frac_tm_min": 34,
+      "ads_minus_Tm_min": 34,
+      "promoter_loading": 0
+    }
+  },
+  "validation": {
+    "random_5_fold": {
+      "RandomForest": {
+        "validation": "Random 5-fold baseline settings",
+        "metrics": {
+          "r2": 0.5543294513977264,
+          "mae_mg_g": 102.75096884064673,
+          "mse_mg_g_squared": 23781.35716663367,
+          "rmse_mg_g": 154.21205259847127,
+          "rmse_mmol_g": 3.5040230083724446
+        }
+      },
+      "ExtraTrees": {
+        "validation": "Random 5-fold baseline settings",
+        "metrics": {
+          "r2": 0.5728426792840138,
+          "mae_mg_g": 97.78480149981525,
+          "mse_mg_g_squared": 22793.475678723215,
+          "rmse_mg_g": 150.97508297306285,
+          "rmse_mmol_g": 3.430472232971208
+        }
+      },
+      "GradientBoosting": {
+        "validation": "Random 5-fold baseline settings",
+        "metrics": {
+          "r2": 0.573520110203896,
+          "mae_mg_g": 102.33314839799591,
+          "mse_mg_g_squared": 22757.327392254727,
+          "rmse_mg_g": 150.85531940324387,
+          "rmse_mmol_g": 3.4277509521300584
+        }
+      }
+    },
+    "study_grouped_nested_5_fold": {
+      "RandomForest": {
+        "validation": "Nested Study-GroupKFold 5 outer / Optuna grouped 3 inner",
+        "metrics": {
+          "r2": 0.21024873672446243,
+          "mae_mg_g": 157.72225793573557,
+          "mse_mg_g_squared": 42141.79492824553,
+          "rmse_mg_g": 205.28466803014183,
+          "rmse_mmol_g": 4.664500523293384
+        },
+        "fold_metrics": [
+          {
+            "r2": -0.35505729161358035,
+            "mae_mg_g": 134.79640555152676,
+            "mse_mg_g_squared": 25192.96564013598,
+            "rmse_mg_g": 158.72292096649426,
+            "rmse_mmol_g": 3.6065194493636508,
+            "fold": 1,
+            "n_test": 78,
+            "test_studies": [
+              12
+            ],
+            "interval_coverage": 0.9743589743589743,
+            "mean_interval_width_mg_g": 785.2905072904966,
+            "conformal_quantile": 2.385721426600609
+          },
+          {
+            "r2": -0.10252698731762755,
+            "mae_mg_g": 167.3021988967758,
+            "mse_mg_g_squared": 54163.22139568883,
+            "rmse_mg_g": 232.7299323157398,
+            "rmse_mmol_g": 5.288114799266981,
+            "fold": 2,
+            "n_test": 66,
+            "test_studies": [
+              6,
+              9,
+              13,
+              21
+            ],
+            "interval_coverage": 0.8787878787878788,
+            "mean_interval_width_mg_g": 774.9292429189547,
+            "conformal_quantile": 2.446456502942964
+          },
+          {
+            "r2": 0.3323029839367736,
+            "mae_mg_g": 158.6940545367873,
+            "mse_mg_g_squared": 38772.05595547585,
+            "rmse_mg_g": 196.90621106373422,
+            "rmse_mmol_g": 4.47412431410439,
+            "fold": 3,
+            "n_test": 66,
+            "test_studies": [
+              7,
+              10,
+              16,
+              18,
+              22
+            ],
+            "interval_coverage": 0.8787878787878788,
+            "mean_interval_width_mg_g": 681.9208651407877,
+            "conformal_quantile": 2.1412095258524175
+          },
+          {
+            "r2": 0.1379793943192349,
+            "mae_mg_g": 160.30947477059965,
+            "mse_mg_g_squared": 43418.744160591246,
+            "rmse_mg_g": 208.37164912864526,
+            "rmse_mmol_g": 4.73464324309578,
+            "fold": 4,
+            "n_test": 67,
+            "test_studies": [
+              2,
+              3,
+              5,
+              8,
+              14,
+              19
+            ],
+            "interval_coverage": 0.9552238805970149,
+            "mean_interval_width_mg_g": 819.3842143910945,
+            "conformal_quantile": 2.5223256467733077
+          },
+          {
+            "r2": 0.2879290778418898,
+            "mae_mg_g": 171.22899733182865,
+            "mse_mg_g_squared": 51927.70244672967,
+            "rmse_mg_g": 227.87650700923444,
+            "rmse_mmol_g": 5.177834742313894,
+            "fold": 5,
+            "n_test": 68,
+            "test_studies": [
+              1,
+              4,
+              11,
+              15,
+              17,
+              20
+            ],
+            "interval_coverage": 0.9411764705882353,
+            "mean_interval_width_mg_g": 865.3534768060099,
+            "conformal_quantile": 2.4921468546794237
+          }
+        ],
+        "best_params_by_outer_fold": {
+          "1": {
+            "max_depth": 37,
+            "n_estimators": 738,
+            "min_samples_split": 11,
+            "min_samples_leaf": 2,
+            "max_features": 0.42664021668053065
+          },
+          "2": {
+            "n_estimators": 494,
+            "min_samples_split": 5,
+            "min_samples_leaf": 2,
+            "max_features": 0.37281607269316175,
+            "max_depth": null
+          },
+          "3": {
+            "max_depth": 31,
+            "n_estimators": 185,
+            "min_samples_split": 18,
+            "min_samples_leaf": 1,
+            "max_features": 0.4287663901002712
+          },
+          "4": {
+            "n_estimators": 736,
+            "min_samples_split": 3,
+            "min_samples_leaf": 8,
+            "max_features": 0.34522201466287794,
+            "max_depth": null
+          },
+          "5": {
+            "max_depth": 22,
+            "n_estimators": 224,
+            "min_samples_split": 12,
+            "min_samples_leaf": 3,
+            "max_features": 0.3074214370304618
+          }
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.927536231884058,
+          "mean_interval_width_mg_g": 785.9349144568515,
+          "mean_interval_width_mmol_g": 17.858098487999353
+        }
+      },
+      "ExtraTrees": {
+        "validation": "Nested Study-GroupKFold 5 outer / Optuna grouped 3 inner",
+        "metrics": {
+          "r2": 0.06964306468140036,
+          "mae_mg_g": 173.1328224861282,
+          "mse_mg_g_squared": 49644.632432311104,
+          "rmse_mg_g": 222.81075475010425,
+          "rmse_mmol_g": 5.062730169282078
+        },
+        "fold_metrics": [
+          {
+            "r2": -0.4058069009059715,
+            "mae_mg_g": 131.91994964197133,
+            "mse_mg_g_squared": 26136.492656348764,
+            "rmse_mg_g": 161.66784669917752,
+            "rmse_mmol_g": 3.6734343717150084,
+            "fold": 1,
+            "n_test": 78,
+            "test_studies": [
+              12
+            ],
+            "interval_coverage": 0.9743589743589743,
+            "mean_interval_width_mg_g": 758.9490350281347,
+            "conformal_quantile": 2.4710572250893823
+          },
+          {
+            "r2": -0.5270023445169014,
+            "mae_mg_g": 202.53537884674682,
+            "mse_mg_g_squared": 75016.18283197419,
+            "rmse_mg_g": 273.89082283270136,
+            "rmse_mmol_g": 6.223377024146816,
+            "fold": 2,
+            "n_test": 66,
+            "test_studies": [
+              6,
+              9,
+              13,
+              21
+            ],
+            "interval_coverage": 0.8333333333333334,
+            "mean_interval_width_mg_g": 794.2031459495197,
+            "conformal_quantile": 2.1871481723549544
+          },
+          {
+            "r2": 0.02844204601902489,
+            "mae_mg_g": 198.1151023269909,
+            "mse_mg_g_squared": 56416.75557850774,
+            "rmse_mg_g": 237.52211597766583,
+            "rmse_mmol_g": 5.397003316920379,
+            "fold": 3,
+            "n_test": 66,
+            "test_studies": [
+              7,
+              10,
+              16,
+              18,
+              22
+            ],
+            "interval_coverage": 0.8636363636363636,
+            "mean_interval_width_mg_g": 757.4557062968472,
+            "conformal_quantile": 2.3057560900098526
+          },
+          {
+            "r2": 0.19480553194790995,
+            "mae_mg_g": 152.06718862076795,
+            "mse_mg_g_squared": 40556.492939362644,
+            "rmse_mg_g": 201.3864268995372,
+            "rmse_mmol_g": 4.575924264929271,
+            "fold": 4,
+            "n_test": 67,
+            "test_studies": [
+              2,
+              3,
+              5,
+              8,
+              14,
+              19
+            ],
+            "interval_coverage": 0.9552238805970149,
+            "mean_interval_width_mg_g": 854.3112671368093,
+            "conformal_quantile": 2.7174636570273707
+          },
+          {
+            "r2": 0.2544923770354569,
+            "mae_mg_g": 188.37697486150478,
+            "mse_mg_g_squared": 54366.070587103255,
+            "rmse_mg_g": 233.16532887010294,
+            "rmse_mmol_g": 5.29800792706437,
+            "fold": 5,
+            "n_test": 68,
+            "test_studies": [
+              1,
+              4,
+              11,
+              15,
+              17,
+              20
+            ],
+            "interval_coverage": 0.9411764705882353,
+            "mean_interval_width_mg_g": 815.5667254484056,
+            "conformal_quantile": 2.258773381366484
+          }
+        ],
+        "best_params_by_outer_fold": {
+          "1": {
+            "max_depth": 19,
+            "n_estimators": 120,
+            "min_samples_split": 2,
+            "min_samples_leaf": 2,
+            "max_features": 0.4671738282622252
+          },
+          "2": {
+            "max_depth": 28,
+            "n_estimators": 536,
+            "min_samples_split": 4,
+            "min_samples_leaf": 4,
+            "max_features": 0.6251626960328072
+          },
+          "3": {
+            "max_depth": 5,
+            "n_estimators": 529,
+            "min_samples_split": 14,
+            "min_samples_leaf": 2,
+            "max_features": 0.6843230105267213
+          },
+          "4": {
+            "max_depth": 13,
+            "n_estimators": 266,
+            "min_samples_split": 13,
+            "min_samples_leaf": 2,
+            "max_features": 0.3274972143921478
+          },
+          "5": {
+            "n_estimators": 352,
+            "min_samples_split": 10,
+            "min_samples_leaf": 10,
+            "max_features": 0.3240294654961111,
+            "max_depth": null
+          }
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.9159420289855073,
+          "mean_interval_width_mg_g": 795.0866701713408,
+          "mean_interval_width_mmol_g": 18.066045675331534
+        }
+      },
+      "GradientBoosting": {
+        "validation": "Nested Study-GroupKFold 5 outer / Optuna grouped 3 inner",
+        "metrics": {
+          "r2": 0.016083779791106312,
+          "mae_mg_g": 173.91567757917304,
+          "mse_mg_g_squared": 52502.60114386323,
+          "rmse_mg_g": 229.1344608387469,
+          "rmse_mmol_g": 5.206418105856553
+        },
+        "fold_metrics": [
+          {
+            "r2": -0.716561705389199,
+            "mae_mg_g": 153.15469660328452,
+            "mse_mg_g_squared": 31913.98646440073,
+            "rmse_mg_g": 178.64486128741774,
+            "rmse_mmol_g": 4.059187941091064,
+            "fold": 1,
+            "n_test": 78,
+            "test_studies": [
+              12
+            ],
+            "interval_coverage": 1.0,
+            "mean_interval_width_mg_g": 799.2964460343011,
+            "conformal_quantile": 2.7090636620138007
+          },
+          {
+            "r2": -0.49962727851201594,
+            "mae_mg_g": 197.54130773545103,
+            "mse_mg_g_squared": 73671.34340600099,
+            "rmse_mg_g": 271.4246551181395,
+            "rmse_mmol_g": 6.167340493481926,
+            "fold": 2,
+            "n_test": 66,
+            "test_studies": [
+              6,
+              9,
+              13,
+              21
+            ],
+            "interval_coverage": 0.7878787878787878,
+            "mean_interval_width_mg_g": 746.2356668964472,
+            "conformal_quantile": 2.553030675885883
+          },
+          {
+            "r2": -0.09821906639878786,
+            "mae_mg_g": 189.45492987789115,
+            "mse_mg_g_squared": 63771.755855431584,
+            "rmse_mg_g": 252.53070279756398,
+            "rmse_mmol_g": 5.7380300567499205,
+            "fold": 3,
+            "n_test": 66,
+            "test_studies": [
+              7,
+              10,
+              16,
+              18,
+              22
+            ],
+            "interval_coverage": 0.9090909090909091,
+            "mean_interval_width_mg_g": 812.1894638959434,
+            "conformal_quantile": 2.1311240576374217
+          },
+          {
+            "r2": 0.08556691607380873,
+            "mae_mg_g": 159.5059016387844,
+            "mse_mg_g_squared": 46058.68567563604,
+            "rmse_mg_g": 214.6128739745965,
+            "rmse_mmol_g": 4.876457031915395,
+            "fold": 4,
+            "n_test": 67,
+            "test_studies": [
+              2,
+              3,
+              5,
+              8,
+              14,
+              19
+            ],
+            "interval_coverage": 0.9701492537313433,
+            "mean_interval_width_mg_g": 984.647672447212,
+            "conformal_quantile": 3.0885194612846143
+          },
+          {
+            "r2": 0.3008661996667802,
+            "mae_mg_g": 173.91463731587305,
+            "mse_mg_g_squared": 50984.26410128515,
+            "rmse_mg_g": 225.7969532595273,
+            "rmse_mmol_g": 5.130582896149223,
+            "fold": 5,
+            "n_test": 68,
+            "test_studies": [
+              1,
+              4,
+              11,
+              15,
+              17,
+              20
+            ],
+            "interval_coverage": 0.9411764705882353,
+            "mean_interval_width_mg_g": 879.8970881786822,
+            "conformal_quantile": 2.439468511243154
+          }
+        ],
+        "best_params_by_outer_fold": {
+          "1": {
+            "n_estimators": 103,
+            "learning_rate": 0.014436802144421945,
+            "max_depth": 2,
+            "subsample": 0.5890625395270335,
+            "min_samples_leaf": 5
+          },
+          "2": {
+            "n_estimators": 627,
+            "learning_rate": 0.2921415427918573,
+            "max_depth": 5,
+            "subsample": 0.7518157052631684,
+            "min_samples_leaf": 3
+          },
+          "3": {
+            "n_estimators": 443,
+            "learning_rate": 0.08500248977831389,
+            "max_depth": 6,
+            "subsample": 0.8227138316527316,
+            "min_samples_leaf": 1
+          },
+          "4": {
+            "n_estimators": 383,
+            "learning_rate": 0.023864045873491224,
+            "max_depth": 6,
+            "subsample": 0.510956449463086,
+            "min_samples_leaf": 3
+          },
+          "5": {
+            "n_estimators": 271,
+            "learning_rate": 0.07941606370945116,
+            "max_depth": 2,
+            "subsample": 0.5924701646592128,
+            "min_samples_leaf": 8
+          }
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.9246376811594202,
+          "mean_interval_width_mg_g": 843.4944274582227,
+          "mean_interval_width_mmol_g": 19.16597199405187
+        }
+      }
+    },
+    "selection_rule": "minimum nested grouped RMSE among TreeExplainer-supported models",
+    "selection_caveat": "Multiple-model selection can add optimism; grouped CV is not a prospective guarantee."
+  },
+  "hpo_summary": {
+    "trials_per_study": 10,
+    "timeout_seconds_per_study": null,
+    "seed": 42,
+    "sampler": "Optuna TPESampler",
+    "pruner": "MedianPruner",
+    "objective": "mean inner GroupKFold RMSE in mg/g",
+    "models": {
+      "RandomForest": {
+        "outer_fold_best_params": {
+          "1": {
+            "max_depth": 37,
+            "n_estimators": 738,
+            "min_samples_split": 11,
+            "min_samples_leaf": 2,
+            "max_features": 0.42664021668053065
+          },
+          "2": {
+            "n_estimators": 494,
+            "min_samples_split": 5,
+            "min_samples_leaf": 2,
+            "max_features": 0.37281607269316175,
+            "max_depth": null
+          },
+          "3": {
+            "max_depth": 31,
+            "n_estimators": 185,
+            "min_samples_split": 18,
+            "min_samples_leaf": 1,
+            "max_features": 0.4287663901002712
+          },
+          "4": {
+            "n_estimators": 736,
+            "min_samples_split": 3,
+            "min_samples_leaf": 8,
+            "max_features": 0.34522201466287794,
+            "max_depth": null
+          },
+          "5": {
+            "max_depth": 22,
+            "n_estimators": 224,
+            "min_samples_split": 12,
+            "min_samples_leaf": 3,
+            "max_features": 0.3074214370304618
+          }
+        },
+        "nested_grouped_metrics": {
+          "r2": 0.21024873672446243,
+          "mae_mg_g": 157.72225793573557,
+          "mse_mg_g_squared": 42141.79492824553,
+          "rmse_mg_g": 205.28466803014183,
+          "rmse_mmol_g": 4.664500523293384
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.927536231884058,
+          "mean_interval_width_mg_g": 785.9349144568515,
+          "mean_interval_width_mmol_g": 17.858098487999353
+        }
+      },
+      "ExtraTrees": {
+        "outer_fold_best_params": {
+          "1": {
+            "max_depth": 19,
+            "n_estimators": 120,
+            "min_samples_split": 2,
+            "min_samples_leaf": 2,
+            "max_features": 0.4671738282622252
+          },
+          "2": {
+            "max_depth": 28,
+            "n_estimators": 536,
+            "min_samples_split": 4,
+            "min_samples_leaf": 4,
+            "max_features": 0.6251626960328072
+          },
+          "3": {
+            "max_depth": 5,
+            "n_estimators": 529,
+            "min_samples_split": 14,
+            "min_samples_leaf": 2,
+            "max_features": 0.6843230105267213
+          },
+          "4": {
+            "max_depth": 13,
+            "n_estimators": 266,
+            "min_samples_split": 13,
+            "min_samples_leaf": 2,
+            "max_features": 0.3274972143921478
+          },
+          "5": {
+            "n_estimators": 352,
+            "min_samples_split": 10,
+            "min_samples_leaf": 10,
+            "max_features": 0.3240294654961111,
+            "max_depth": null
+          }
+        },
+        "nested_grouped_metrics": {
+          "r2": 0.06964306468140036,
+          "mae_mg_g": 173.1328224861282,
+          "mse_mg_g_squared": 49644.632432311104,
+          "rmse_mg_g": 222.81075475010425,
+          "rmse_mmol_g": 5.062730169282078
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.9159420289855073,
+          "mean_interval_width_mg_g": 795.0866701713408,
+          "mean_interval_width_mmol_g": 18.066045675331534
+        }
+      },
+      "GradientBoosting": {
+        "outer_fold_best_params": {
+          "1": {
+            "n_estimators": 103,
+            "learning_rate": 0.014436802144421945,
+            "max_depth": 2,
+            "subsample": 0.5890625395270335,
+            "min_samples_leaf": 5
+          },
+          "2": {
+            "n_estimators": 627,
+            "learning_rate": 0.2921415427918573,
+            "max_depth": 5,
+            "subsample": 0.7518157052631684,
+            "min_samples_leaf": 3
+          },
+          "3": {
+            "n_estimators": 443,
+            "learning_rate": 0.08500248977831389,
+            "max_depth": 6,
+            "subsample": 0.8227138316527316,
+            "min_samples_leaf": 1
+          },
+          "4": {
+            "n_estimators": 383,
+            "learning_rate": 0.023864045873491224,
+            "max_depth": 6,
+            "subsample": 0.510956449463086,
+            "min_samples_leaf": 3
+          },
+          "5": {
+            "n_estimators": 271,
+            "learning_rate": 0.07941606370945116,
+            "max_depth": 2,
+            "subsample": 0.5924701646592128,
+            "min_samples_leaf": 8
+          }
+        },
+        "nested_grouped_metrics": {
+          "r2": 0.016083779791106312,
+          "mae_mg_g": 173.91567757917304,
+          "mse_mg_g_squared": 52502.60114386323,
+          "rmse_mg_g": 229.1344608387469,
+          "rmse_mmol_g": 5.206418105856553
+        },
+        "interval": {
+          "target_coverage": 0.9,
+          "empirical_coverage": 0.9246376811594202,
+          "mean_interval_width_mg_g": 843.4944274582227,
+          "mean_interval_width_mmol_g": 19.16597199405187
+        }
+      }
+    },
+    "selected_final_params": {
+      "n_estimators": 704,
+      "min_samples_split": 20,
+      "min_samples_leaf": 2,
+      "max_features": 0.387573810313962,
+      "max_depth": null
+    },
+    "final_study_best_inner_rmse_mg_g": 201.40321628195485
+  },
+  "hpo_param_importance": {
+    "RandomForest/outer-1": {
+      "min_samples_leaf": 0.3166787221502928,
+      "n_estimators": 0.2534145405162921,
+      "unlimited_depth": 0.2047936593834161,
+      "max_features": 0.12410683921584392,
+      "min_samples_split": 0.1010062387341551
+    },
+    "RandomForest/outer-2": {
+      "max_features": 0.5296005751546874,
+      "min_samples_split": 0.17821481351543506,
+      "n_estimators": 0.17501295069924228,
+      "unlimited_depth": 0.0661003589076638,
+      "min_samples_leaf": 0.051071301722971627
+    },
+    "RandomForest/outer-3": {
+      "n_estimators": 0.3937771717530612,
+      "min_samples_leaf": 0.3521508442987573,
+      "max_features": 0.20274482005251918,
+      "min_samples_split": 0.029949763139573822,
+      "unlimited_depth": 0.021377400756088384
+    },
+    "RandomForest/outer-4": {
+      "max_features": 0.7103478432967372,
+      "min_samples_leaf": 0.14303886579318043,
+      "min_samples_split": 0.07521939729507159,
+      "n_estimators": 0.0663576584292257,
+      "unlimited_depth": 0.005036235185785038
+    },
+    "RandomForest/outer-5": {
+      "max_features": 0.7984330352028827,
+      "min_samples_leaf": 0.09220025138528498,
+      "n_estimators": 0.07616217138661442,
+      "unlimited_depth": 0.028544017635655457,
+      "min_samples_split": 0.004660524389562501
+    },
+    "ExtraTrees/outer-1": {
+      "max_features": 0.5258753298837244,
+      "n_estimators": 0.24773083806874943,
+      "unlimited_depth": 0.14301040338567234,
+      "min_samples_leaf": 0.05614578207595304,
+      "min_samples_split": 0.02723764658590071
+    },
+    "ExtraTrees/outer-2": {
+      "max_features": 0.7362068252371227,
+      "min_samples_leaf": 0.15519394461488795,
+      "n_estimators": 0.04678964638965157,
+      "min_samples_split": 0.043266785415492635,
+      "unlimited_depth": 0.018542798342845078
+    },
+    "ExtraTrees/outer-3": {
+      "max_features": 0.730284354724101,
+      "n_estimators": 0.19259990349175107,
+      "min_samples_split": 0.035022353577405456,
+      "min_samples_leaf": 0.026790427570159925,
+      "unlimited_depth": 0.015302960636582572
+    },
+    "ExtraTrees/outer-4": {
+      "max_features": 0.5985740490375506,
+      "min_samples_leaf": 0.3014137278132354,
+      "min_samples_split": 0.04831923383313778,
+      "n_estimators": 0.04010805066633525,
+      "unlimited_depth": 0.011584938649740884
+    },
+    "ExtraTrees/outer-5": {
+      "max_features": 0.6933169418241075,
+      "n_estimators": 0.11822857104852101,
+      "min_samples_leaf": 0.0807539701313674,
+      "unlimited_depth": 0.07875750594937209,
+      "min_samples_split": 0.028943011046631936
+    },
+    "GradientBoosting/outer-1": {
+      "learning_rate": 0.370330124271928,
+      "max_depth": 0.28569248502694344,
+      "n_estimators": 0.13280615875109117,
+      "subsample": 0.12926946355170685,
+      "min_samples_leaf": 0.08190176839833047
+    },
+    "GradientBoosting/outer-2": {
+      "min_samples_leaf": 0.38681234261967895,
+      "n_estimators": 0.20366440162013422,
+      "learning_rate": 0.19342138224694846,
+      "subsample": 0.15138610400919808,
+      "max_depth": 0.06471576950404043
+    },
+    "GradientBoosting/outer-3": {
+      "learning_rate": 0.43651098837470337,
+      "min_samples_leaf": 0.25559140696513516,
+      "n_estimators": 0.14383067889626613,
+      "subsample": 0.09469149922980671,
+      "max_depth": 0.06937542653408857
+    },
+    "GradientBoosting/outer-4": {
+      "n_estimators": 0.4544792510006866,
+      "subsample": 0.34742199791968426,
+      "learning_rate": 0.11117439172302639,
+      "max_depth": 0.0646057735051392,
+      "min_samples_leaf": 0.022318585851463468
+    },
+    "GradientBoosting/outer-5": {
+      "learning_rate": 0.44320411646059454,
+      "n_estimators": 0.18953072674043173,
+      "max_depth": 0.1865789444108254,
+      "subsample": 0.14129899146600253,
+      "min_samples_leaf": 0.03938722092214587
+    },
+    "RandomForest/final-full-data": {
+      "max_features": 0.8406417979300184,
+      "min_samples_leaf": 0.07948486210852906,
+      "min_samples_split": 0.049129307530491446,
+      "n_estimators": 0.020580515960594185,
+      "unlimited_depth": 0.010163516470367014
+    }
+  },
+  "calibration": {
+    "alpha": 0.1,
+    "target_coverage": 0.9,
+    "empirical_coverage": 0.927536231884058,
+    "mean_interval_width_mg_g": 785.9349144568515,
+    "mean_interval_width_mmol_g": 17.858098487999353,
+    "conformal_quantile": 2.2513433329329975,
+    "method": "Study-grouped normalized split-conformal calibration on nested out-of-fold absolute residuals; fold-specific cross-fitted scale models for reported outer-fold coverage",
+    "coverage_note": "Empirical coverage is pooled outer-fold held-out coverage; small number of studies makes it noisy."
+  },
+  "shap": {
+    "method": "TreeExplainer",
+    "n_features": 58,
+    "global_importance_path": "shap_values_mean_abs.csv"
+  },
+  "runtime_seconds": 292.8
+}

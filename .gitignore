@@ -1,0 +1,29 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Local database
+backend/app.db
+*.sqlite
+*.sqlite3
+
+# Generated training candidates
+backend/saved_models/candidates/
+
+# Generated temporary files
+data/versions/
+.DS_Store
