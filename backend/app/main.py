@@ -215,10 +215,8 @@ routers = (
 )
 
 for router in routers:
-    app.include_router(router)
     app.include_router(router, prefix="/api")
-
-
+    
 @app.exception_handler(Exception)
 async def unexpected_error(request, exc):
     print(f"Unexpected application error: {exc}")
