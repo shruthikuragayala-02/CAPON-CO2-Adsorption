@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends,HTTPException,UploadFile,File,Query
 from pydantic import BaseModel,Field
 from pathlib import Path
 import pandas as pd,io,hashlib,shutil,csv
-from ..config import PROJECT_DIR,BASE_DIR,MODEL_PATH
+from ..config import PROJECT_DIR,BASE_DIR,MODEL_PATH,DATABASE_URL
 from ..database import db,audit
 from ..security.auth import require_developer
 router=APIRouter(prefix='/developer',tags=['developer'])
@@ -35,7 +35,7 @@ def overview(user=Depends(require_developer)):
     try: info=json.loads((BASE_DIR/'reports/evaluation.json').read_text()).get('dataset',{})
     except: pass
     with db() as c:
-        n=c.execute('SELECT COUNT(*) FROM users').fetchone()[0]
+        n=c.execute('SELECT COUNT(*) AS user_count FROM users').fetchone()['user_count']
         jobs=[dict(x) for x in c.execute('SELECT id,status,progress,created_at FROM training_jobs ORDER BY created_at DESC LIMIT 5')]
     active_cfg=(runtime.payload.get('metadata',{}).get('training_config') if runtime.payload else None)
     algo=(runtime.payload.get('metadata',{}).get('algorithm') if runtime.payload else None)
@@ -104,7 +104,7 @@ def users(user=Depends(require_developer)):
 
 @router.post('/users/{uid}/disable')
 def disable_user(uid:int,disabled:bool=True,user=Depends(require_developer)):
-    with db() as c: cur=c.execute('UPDATE users SET disabled=? WHERE id=? AND role="user"',(int(disabled),uid))
+    with db() as c: cur=c.execute("UPDATE users SET disabled=? WHERE id=? AND role='user'",(int(disabled),uid))
     if not cur.rowcount: raise HTTPException(404,'User not found or protected role')
     audit(user['id'],'user_status',f'{uid} disabled={disabled}'); return {'user_id':uid,'disabled':disabled}
 
@@ -116,8 +116,7 @@ def audit_logs(user=Depends(require_developer)):
 @router.get('/health')
 def system_health(user=Depends(require_developer)):
     from ..services.prediction_service import runtime
-    return {'api':'ok','database':'sqlite','model_loaded':bool(runtime.payload),'model_error':runtime.error,'artifact_path':str(MODEL_PATH)}
-
+    return {'api':'ok','database':'postgresql' if DATABASE_URL else 'sqlite','model_loaded':bool(runtime.payload),'model_error':runtime.error,'artifact_path':str(MODEL_PATH)}
 class DeveloperPasswordChange(BaseModel):
     current_password:str
     new_password:str=Field(min_length=12,max_length=128)

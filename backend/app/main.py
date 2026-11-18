@@ -152,9 +152,10 @@ def startup():
             with db() as connection:
                 connection.execute(
                     """
-                    INSERT OR IGNORE INTO model_versions
-                    (version, artifact_path, metrics_json, status)
+                   INSERT INTO model_versions
+                   (version, artifact_path, metrics_json, status)
                     VALUES (?, ?, ?, 'deployed')
+                    ON CONFLICT (version) DO NOTHING
                     """,
                     (version, str(MODEL_PATH), json.dumps(metrics)),
                 )

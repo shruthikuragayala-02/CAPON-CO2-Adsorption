@@ -43,7 +43,16 @@ def worker(jobid,data_path,stage,req,actor):
         metrics=result['validation']['study_grouped_nested_5_fold'][model_name]['metrics']
         metrics.update(result.get('calibration',{}));cfg=result.get('training_config',{});metrics.update({'algorithm':model_name,'imputation':cfg.get('imputation'),'missing_indicator':cfg.get('missing_indicator'),'models_compared':cfg.get('models')})
         with db() as c:
-            c.execute("INSERT OR REPLACE INTO model_versions(version,artifact_path,metrics_json,created_by,status) VALUES(?,?,?,?, 'candidate')",(version,artifact,json.dumps(metrics),actor))
+            c.execute("""
+    INSERT INTO model_versions
+    (version, artifact_path, metrics_json, created_by, status)
+    VALUES (?, ?, ?, ?, 'candidate')
+    ON CONFLICT (version) DO UPDATE SET
+        artifact_path = EXCLUDED.artifact_path,
+        metrics_json = EXCLUDED.metrics_json,
+        created_by = EXCLUDED.created_by,
+        status = EXCLUDED.status
+""", (version, artifact, json.dumps(metrics), actor))
             c.execute("UPDATE training_jobs SET status='completed',progress=1,log=log||'\\nCandidate ready for explicit deployment',result_json=? WHERE id=?",(json.dumps({'version':version,'report_path':str(Path(stage)/'reports/evaluation.json'),'hpo_summary':result.get('hpo_summary'),'calibration':result.get('calibration'),'config':result.get('training_config')}),jobid))
         audit(actor,'training_complete',version)
     except Exception as e:
