@@ -526,7 +526,12 @@ def forgot_password(data: ForgotPassword):
     try:
         send_password_reset_email(user['email'], reset_url)
 
-    except Exception:
+    except Exception as exc:
+        print(
+            f"PASSWORD RESET EMAIL ERROR: {type(exc).__name__}: {exc}",
+            flush=True
+        )
+
         with db() as c:
             c.execute(
                 'DELETE FROM password_reset_tokens WHERE token_hash=?',
@@ -538,7 +543,6 @@ def forgot_password(data: ForgotPassword):
             'password_reset_email_failed',
             'Password reset email delivery failed'
         )
-
     return generic_response
 
 
