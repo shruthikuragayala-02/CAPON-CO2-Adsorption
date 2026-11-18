@@ -59,6 +59,7 @@ class ResetPassword(BaseModel):
     new_password: str = Field(min_length=10, max_length=128)
 
 _dev_hash = hash_password(DEV_PASSWORD) if DEV_PASSWORD else None
+
 def send_password_reset_email(recipient, reset_url):
 
     host = os.getenv('SMTP_HOST', '').strip()
@@ -93,15 +94,36 @@ CAPON Support
 """
     )
 
-    context = ssl.create_default_context()
+    stage = 'connecting'
 
-    with smtplib.SMTP(host, port, timeout=20) as server:
-        server.ehlo()
-        server.starttls(context=context)
-        server.ehlo()
-        server.login(login, password)
-        server.send_message(message)
+    try:
+        context = ssl.create_default_context()
 
+        with smtplib.SMTP(host, port, timeout=30) as server:
+
+            stage = 'SMTP greeting'
+            server.ehlo()
+
+            stage = 'STARTTLS'
+            server.starttls(context=context)
+
+            stage = 'EHLO after STARTTLS'
+            server.ehlo()
+
+            stage = 'SMTP authentication'
+            server.login(login, password)
+
+            stage = 'sending email'
+            server.send_message(message)
+
+        print('PASSWORD RESET EMAIL: sent successfully', flush=True)
+
+    except Exception as exc:
+        print(
+            f'SMTP FAILURE AT {stage}: {type(exc).__name__}: {exc}',
+            flush=True
+        )
+        raise
 
 def cookie(response, token):
     response.set_cookie(
