@@ -188,7 +188,7 @@ export function PredictPage() {
                 {[["pretreatment_gas", "Pretreatment gas", "text"], ...numFields.slice(1, 4)].map(([k, l, u]) => (
                   <label key={k}>
                     {l}
-                    {u ? (
+                    {u && u !== "text" ? (
                       <div className="input-unit">
                         <input
                           type="number"
@@ -218,7 +218,7 @@ export function PredictPage() {
                 {[["adsorption_gas", "Adsorption gas", "text"], ...numFields.slice(4, 8)].map(([k, l, u]) => (
                   <label key={k}>
                     {l}
-                    {u ? (
+                    {u && u !== "text" ? (
                       <div className="input-unit">
                         <input
                           type="number"
