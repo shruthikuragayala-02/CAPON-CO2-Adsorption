@@ -63,6 +63,9 @@ export function LoginPage({ developer = false, register: registerRoute = false }
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [show, setShow] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+const [forgotEmail, setForgotEmail] = useState("");
+const [forgotMessage, setForgotMessage] = useState("");
   const submit = async (e) => {
     e.preventDefault();
     setErr("");
@@ -78,6 +81,26 @@ export function LoginPage({ developer = false, register: registerRoute = false }
       setBusy(false);
     }
   };
+  const requestPasswordReset = async (e) => {
+  e.preventDefault();
+  setErr("");
+  setForgotMessage("");
+  setBusy(true);
+
+  try {
+    await api.post("/auth/forgot-password", {
+      email: forgotEmail.trim()
+    });
+
+    setForgotMessage(
+      "If an account exists with this email, password reset instructions will be sent."
+    );
+  } catch (x) {
+    setErr(x.message || "Unable to process your request. Please try again.");
+  } finally {
+    setBusy(false);
+  }
+};
   const pickRole = (r) => {
     if (r === role) return;
     setRole(r);
@@ -144,75 +167,134 @@ export function LoginPage({ developer = false, register: registerRoute = false }
               : "Explore MgO-based CO₂ adsorption predictions and analysis."}
           </p>
         </div>
-        <form onSubmit={submit} key={"form-" + role}>
-          {register && (
-            <label>
-              Work email
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@lab.org"
-              />
-            </label>
-          )}
-          <label>
-            {register ? "Username" : "Username or email"}
-            <input
-              required
-              autoComplete="username"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              placeholder={developerMode ? "developer" : "your username"}
-            />
-          </label>
-          <label>
-            Password
-            <div className="password-wrap">
-              <input
-                type={show ? "text" : "password"}
-                required
-                minLength={register ? 10 : 1}
-                autoComplete={register ? "new-password" : "current-password"}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                placeholder={register ? "At least 10 characters" : "Enter your password"}
-              />
-              <button type="button" className="icon-btn" onClick={() => setShow(!show)} aria-label="Toggle password visibility">
-                {show ? <EyeOff size={17} /> : <Eye size={17} />}
-              </button>
-            </div>
-          </label>
-          {err && <div className="alert danger">{err}</div>}
-          <button className="btn primary wide" disabled={busy}>
-            {busy ? <Loader2 className="spin" size={17} /> : null}
-            {developerMode ? "Sign in to Developer Console" : register ? "Create account" : "Sign in"}
-            <ArrowRight size={17} />
+{forgotMode ? (
+  <>
+    <form onSubmit={requestPasswordReset}>
+      <label>
+        Registered email address
+        <input
+          type="email"
+          required
+          value={forgotEmail}
+          onChange={(e) => setForgotEmail(e.target.value)}
+          placeholder="Enter your registered email"
+        />
+      </label>
+
+      {err && <div className="alert danger">{err}</div>}
+
+      {forgotMessage && (
+        <div className="alert success">{forgotMessage}</div>
+      )}
+
+      <button
+        className="btn primary wide"
+        disabled={busy || !!forgotMessage}
+      >
+        {busy ? "Sending..." : "Send reset link"}
+        <ArrowRight size={17} />
+      </button>
+    </form>
+
+    <div className="auth-links">
+      <button
+        type="button"
+        onClick={() => {
+          setForgotMode(false);
+          setForgotMessage("");
+          setErr("");
+        }}
+      >
+        Back to sign in
+      </button>
+    </div>
+  </>
+) : (
+  <>
+    <form onSubmit={submit} key={"form-" + role}>
+      {register && (
+        <label>
+          Work email
+          <input
+            type="email"
+            required
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="you@lab.org"
+          />
+        </label>
+      )}
+
+      <label>
+        {register ? "Username" : "Username or email"}
+        <input
+          required
+          autoComplete="username"
+          value={form.username}
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
+          placeholder={developerMode ? "developer" : "your username"}
+        />
+      </label>
+
+      <label>
+        Password
+        <div className="password-wrap">
+          <input
+            type={show ? "text" : "password"}
+            required
+            minLength={register ? 10 : 1}
+            autoComplete={register ? "new-password" : "current-password"}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            placeholder={register ? "At least 10 characters" : "Enter your password"}
+          />
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() => setShow(!show)}
+            aria-label="Toggle password visibility"
+          >
+            {show ? <EyeOff size={17} /> : <Eye size={17} />}
           </button>
-        </form>
-        {!developerMode && (
-          <div className="auth-links">
-            {!register && (
-              <button
-                onClick={async () => {
-                  try {
-                    await api.post("/auth/forgot-password", {});
-                    setErr("If the account exists, reset instructions will be sent. Email delivery is not configured in this local setup.");
-                  } catch (x) {
-                    setErr(x.message);
-                  }
-                }}
-              >
-                Forgot password?
-              </button>
-            )}
-            <span>
-              {register ? "Already registered?" : "New to CAPON?"}{" "}
-              <a href={register ? "/login" : "/register"}>{register ? "Sign in" : "Create account"}</a>
-            </span>
-          </div>
+        </div>
+      </label>
+
+      {err && <div className="alert danger">{err}</div>}
+
+      <button className="btn primary wide" disabled={busy}>
+        {busy ? <Loader2 className="spin" size={17} /> : null}
+        {developerMode ? "Sign in to Developer Console" : register ? "Create account" : "Sign in"}
+        <ArrowRight size={17} />
+      </button>
+    </form>
+
+    {!developerMode && (
+      <div className="auth-links">
+        {!register && (
+          <button
+            type="button"
+            onClick={() => {
+              setForgotMode(true);
+              setForgotEmail("");
+              setErr("");
+              setForgotMessage("");
+            }}
+          >
+            Forgot password?
+          </button>
         )}
+
+        <span>
+          {register ? "Already registered?" : "New to CAPON?"}{" "}
+          <a href={register ? "/login" : "/register"}>
+            {register ? "Sign in" : "Create account"}
+          </a>
+        </span>
+      </div>
+    )}
+  </>
+)}
+
         {developerMode && (
           <p className="dev-note">
             <ShieldCheck size={14} />

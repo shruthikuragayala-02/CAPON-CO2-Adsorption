@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import AuthBackground from "./components/AuthBackground";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import {
   Dashboard,
   LoginPage,
@@ -255,6 +256,7 @@ function AppRoutes() {
   const { user } = useAuth();
   return (
     <Routes>
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <LoginPage register />} />
       <Route path="/developer-login" element={user?.role === "developer" ? <Navigate to="/developer" replace /> : <LoginPage developer />} />

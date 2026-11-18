@@ -1,7 +1,13 @@
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import jwt
 import secrets
+import hashlib
+import os
+import smtplib
+import ssl
+
+from email.message import EmailMessage
 
 from fastapi import APIRouter, HTTPException, Request, Response, Depends
 from pydantic import BaseModel, EmailStr, Field
@@ -44,9 +50,57 @@ class Login(BaseModel):
 class ChangePassword(BaseModel):
     current_password: str
     new_password: str = Field(min_length=10, max_length=128)
+class ForgotPassword(BaseModel):
+    email: EmailStr
 
+
+class ResetPassword(BaseModel):
+    token: str = Field(min_length=20, max_length=200)
+    new_password: str = Field(min_length=10, max_length=128)
 
 _dev_hash = hash_password(DEV_PASSWORD) if DEV_PASSWORD else None
+def send_password_reset_email(recipient, reset_url):
+
+    host = os.getenv('SMTP_HOST', '').strip()
+    port = int(os.getenv('SMTP_PORT', '587'))
+    login = os.getenv('SMTP_LOGIN', '').strip()
+    password = os.getenv('SMTP_PASSWORD', '')
+    sender = os.getenv('EMAIL_FROM', '').strip()
+
+    if not all((host, login, password, sender)):
+        raise RuntimeError('SMTP configuration is incomplete')
+
+    message = EmailMessage()
+    message['Subject'] = 'Reset your CAPON password'
+    message['From'] = f'CAPON <{sender}>'
+    message['To'] = recipient
+
+    message.set_content(
+        f"""Hello,
+
+We received a request to reset your CAPON account password.
+
+Use the link below to create a new password:
+
+{reset_url}
+
+This link expires in 30 minutes and can only be used once.
+
+If you did not request this, you can ignore this email.
+
+Regards,
+CAPON Support
+"""
+    )
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP(host, port, timeout=20) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+        server.login(login, password)
+        server.send_message(message)
 
 
 def cookie(response, token):
@@ -423,11 +477,137 @@ def change_password(
 
 # FORGOT PASSWORD
 @router.post('/forgot-password')
-def forgot_password():
+def forgot_password(data: ForgotPassword):
+
+    generic_response = {
+        'ok': True,
+        'message': 'If the account exists, password reset instructions will be sent to its registered email address.'
+    }
+
+    email = str(data.email).lower()
+
+    with db() as c:
+        user = c.execute(
+            'SELECT id,email FROM users WHERE email=? AND disabled=0',
+            (email,)
+        ).fetchone()
+
+    if not user:
+        return generic_response
+
+    token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+    expires_at = (
+        datetime.now(timezone.utc) + timedelta(minutes=30)
+    ).isoformat()
+
+    with db() as c:
+        c.execute(
+            'DELETE FROM password_reset_tokens WHERE user_id=?',
+            (user['id'],)
+        )
+
+        c.execute(
+            'INSERT INTO password_reset_tokens '
+            '(token_hash,user_id,expires_at) VALUES(?,?,?)',
+            (token_hash, user['id'], expires_at)
+        )
+
+    frontend_url = os.getenv(
+        'FRONTEND_URL',
+        'http://localhost:5173'
+    ).rstrip('/')
+
+    reset_url = (
+        f'{frontend_url}/reset-password?token={token}'
+    )
+
+    try:
+        send_password_reset_email(user['email'], reset_url)
+
+    except Exception:
+        with db() as c:
+            c.execute(
+                'DELETE FROM password_reset_tokens WHERE token_hash=?',
+                (token_hash,)
+            )
+
+        audit(
+            user['id'],
+            'password_reset_email_failed',
+            'Password reset email delivery failed'
+        )
+
+    return generic_response
+
+
+# RESET PASSWORD
+@router.post('/reset-password')
+def reset_password(data: ResetPassword):
+
+    token_hash = hashlib.sha256(
+        data.token.encode()
+    ).hexdigest()
+
+    with db() as c:
+
+        row = c.execute(
+            'SELECT user_id,expires_at,used '
+            'FROM password_reset_tokens WHERE token_hash=?',
+            (token_hash,)
+        ).fetchone()
+
+        if not row or row['used']:
+            raise HTTPException(
+                400,
+                'Invalid or expired password reset link'
+            )
+
+        try:
+            expiry = datetime.fromisoformat(row['expires_at'])
+
+            if expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+
+        except (ValueError, TypeError):
+            raise HTTPException(
+                400,
+                'Invalid or expired password reset link'
+            )
+
+        if datetime.now(timezone.utc) >= expiry:
+            raise HTTPException(
+                400,
+                'Invalid or expired password reset link'
+            )
+
+        user_id = row['user_id']
+
+        c.execute(
+            'UPDATE users SET password_hash=? WHERE id=?',
+            (hash_password(data.new_password), user_id)
+        )
+
+        c.execute(
+            'UPDATE password_reset_tokens SET used=1 WHERE user_id=?',
+            (user_id,)
+        )
+
+        c.execute(
+            'UPDATE refresh_tokens SET revoked=1 WHERE user_id=?',
+            (user_id,)
+        )
+
+    audit(
+        user_id,
+        'password_reset',
+        'Password reset completed'
+    )
 
     return {
         'ok': True,
-        'message': 'If the account exists, follow the password reset instructions. Email delivery is not configured in this local installation.'
+        'message': 'Password reset successfully. Please log in with your new password.'
     }
 
 
