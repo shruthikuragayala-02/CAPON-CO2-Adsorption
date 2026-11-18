@@ -60,24 +60,28 @@ class ResetPassword(BaseModel):
 
 _dev_hash = hash_password(DEV_PASSWORD) if DEV_PASSWORD else None
 
-def send_password_reset_email(recipient, reset_url):
 
-    host = os.getenv('SMTP_HOST', '').strip()
-    port = int(os.getenv('SMTP_PORT', '587'))
-    login = os.getenv('SMTP_LOGIN', '').strip()
-    password = os.getenv('SMTP_PASSWORD', '')
+def send_password_reset_email(recipient, reset_url):
+    import requests
+
+    api_key = os.getenv('BREVO_API_KEY', '').strip()
     sender = os.getenv('EMAIL_FROM', '').strip()
 
-    if not all((host, login, password, sender)):
-        raise RuntimeError('SMTP configuration is incomplete')
+    if not api_key or not sender:
+        raise RuntimeError('Brevo API configuration is incomplete')
 
-    message = EmailMessage()
-    message['Subject'] = 'Reset your CAPON password'
-    message['From'] = f'CAPON <{sender}>'
-    message['To'] = recipient
-
-    message.set_content(
-        f"""Hello,
+    payload = {
+        "sender": {
+            "name": "CAPON Support",
+            "email": sender
+        },
+        "to": [
+            {
+                "email": recipient
+            }
+        ],
+        "subject": "Reset your CAPON password",
+        "textContent": f"""Hello,
 
 We received a request to reset your CAPON account password.
 
@@ -92,39 +96,33 @@ If you did not request this, you can ignore this email.
 Regards,
 CAPON Support
 """
-    )
-
-    stage = 'connecting'
+    }
 
     try:
-        context = ssl.create_default_context()
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "accept": "application/json",
+                "api-key": api_key,
+                "content-type": "application/json"
+            },
+            json=payload,
+            timeout=30
+        )
 
-        with smtplib.SMTP(host, port, timeout=30) as server:
+        if response.status_code not in (200, 201, 202):
+            raise RuntimeError(
+                f"Brevo API error: HTTP {response.status_code}"
+            )
 
-            stage = 'SMTP greeting'
-            server.ehlo()
-
-            stage = 'STARTTLS'
-            server.starttls(context=context)
-
-            stage = 'EHLO after STARTTLS'
-            server.ehlo()
-
-            stage = 'SMTP authentication'
-            server.login(login, password)
-
-            stage = 'sending email'
-            server.send_message(message)
-
-        print('PASSWORD RESET EMAIL: sent successfully', flush=True)
+        print("PASSWORD RESET EMAIL: accepted by Brevo API", flush=True)
 
     except Exception as exc:
         print(
-            f'SMTP FAILURE AT {stage}: {type(exc).__name__}: {exc}',
+            f"BREVO API FAILURE: {type(exc).__name__}: {exc}",
             flush=True
         )
         raise
-
 def cookie(response, token):
     response.set_cookie(
         'mgo_refresh',

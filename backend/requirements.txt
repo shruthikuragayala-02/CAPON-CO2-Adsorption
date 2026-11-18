@@ -16,3 +16,4 @@ httpx==0.28.1
 optuna==4.2.1
 shap==0.47.2
 psycopg[binary]==3.2.6
+requests==2.32.3
