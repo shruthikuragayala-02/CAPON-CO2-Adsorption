@@ -1,4 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException
+from pathlib import Path
+import pandas as pd
 import optuna
 from optuna.samplers import TPESampler
 from ..schemas import OptimizeInput,PredictionInput
@@ -7,6 +9,25 @@ from ..services.prediction_service import runtime
 router=APIRouter(tags=['optimization'])
 DOMAIN={'active_pct':(0,100),'pretreatment_flow':(0,500),'pretreatment_temperature':(0,1000),'pretreatment_time':(0,1000),'co2_percentage':(0,100),'adsorption_flow':(0,1000),'adsorption_temperature':(0,1000),'adsorption_time':(0,5000),'surface_area':(0,5000),'pore_volume':(0,10),'pore_size':(0,1000)}
 BASE={'active_pct':85,'active_component':'MgO','precursor':'Mg(NO3)2','promoter':'','ratio':'','synthesis_method':'impregnation','pretreatment_gas':'N2','pretreatment_flow':100,'pretreatment_temperature':400,'pretreatment_time':30,'adsorption_gas':'CO2','co2_percentage':100,'adsorption_flow':80,'adsorption_temperature':300,'adsorption_time':120,'surface_area':100,'pore_volume':0.5,'pore_size':20,'application':'fixed bed'}
+
+
+def _observed_dopant_formulations():
+    # Compare only promoter/ratio pairs represented in the training dataset.
+    source = Path(__file__).resolve().parents[3] / 'data' / 'mgo_database_source_normalized.csv'
+    try:
+        frame = pd.read_csv(source, header=None, keep_default_na=False, usecols=[6, 7])
+        pairs = set()
+        for promoter, ratio in frame.itertuples(index=False, name=None):
+            promoter, ratio = str(promoter).strip(), str(ratio).strip()
+            if promoter.lower() not in {'', 'na', 'n/a', 'nan'} and ratio.lower() not in {'', 'na', 'n/a', 'nan'}:
+                pairs.add((promoter, ratio))
+        return sorted(pairs, key=lambda pair: (pair[0].lower(), pair[1]))
+    except Exception:
+        return [('NaNO3', '1')]
+
+
+DOPANT_FORMULATIONS = _observed_dopant_formulations()
+
 
 @router.post('/optimize/conditions')
 def optimize(req:OptimizeInput,user=Depends(require_user)):
@@ -67,6 +88,36 @@ def optimize(req:OptimizeInput,user=Depends(require_user)):
         key=tuple(sorted((k,round(float(v),4) if isinstance(v,(float,int)) else str(v)) for k,v in c['conditions'].items()))
         distinct.setdefault(key,c)
     top=list(distinct.values())[:5]
+
+    # Rank observed promoter formulations at each optimized process condition.
+    # These are model-based screens, not experimentally validated rankings.
+    for candidate in top:
+        comparisons = []
+        for promoter, ratio in DOPANT_FORMULATIONS:
+            doped_conditions = {**candidate['conditions'], 'promoter': promoter, 'ratio': ratio}
+            try:
+                prediction = runtime.predict([doped_conditions], explain=False, persist_user=None)
+                uncertainty = prediction.get('uncertainty')
+                mean = float(prediction['capacity_mg_g'])
+                sigma = float((uncertainty or {}).get('sigma_mg_g', (uncertainty or {}).get('std_mg_g', 0.0)))
+                score = mean if req.objective_mode == 'mean' else mean - req.k * sigma
+                if prediction.get('ood_warning') and uncertainty:
+                    score -= req.ood_penalty * max(0.0, float(uncertainty['upper_mg_g'] - uncertainty['lower_mg_g']) / 2)
+                comparisons.append({
+                    'promoter': promoter, 'ratio': ratio,
+                    'capacity_mg_g': mean, 'capacity_mmol_g': mean / 44.01,
+                    'objective_value_mg_g': float(score),
+                    'confidence_flag': prediction.get('confidence_flag'),
+                    'ood_warning': prediction.get('ood_warning', False),
+                })
+            except Exception:
+                continue
+        comparisons.sort(key=lambda item: item['objective_value_mg_g'], reverse=True)
+        candidate['dopant_comparisons'] = comparisons[:5]
+        candidate['best_dopant'] = comparisons[0] if comparisons else None
+        candidate['dopant_comparison_count'] = len(comparisons)
+
     return {'objective_mode':req.objective_mode,'k':req.k,'method':'Optuna TPE Bayesian optimisation','top_candidates':top,
         'convergence':convergence,'effective_bounds':{k:list(v) for k,v in bounds.items()},'best_value_mg_g':float(study.best_value) if study.best_trials else None,
-        'warnings':['Model-guided screening only; no condition is experimentally validated.','OOD candidates are penalised and flagged; confidence may remain low.']}
+        'dopant_formulations_screened':len(DOPANT_FORMULATIONS),
+        'warnings':['Model-guided screening only; no condition is experimentally validated.','Dopant rankings compare promoter/ratio combinations present in the supplied training dataset; they are model-based suggestions, not experimental proof.','OOD candidates are penalised and flagged; confidence may remain low.']}

@@ -215,6 +215,11 @@ routers = (
     training.router,
 )
 
+# Register routes without a prefix for backward compatibility.
+for router in routers:
+    app.include_router(router)
+
+# Also register routes under /api for the React frontend.
 for router in routers:
     app.include_router(router, prefix="/api")
     

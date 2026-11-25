@@ -78,6 +78,21 @@ describe("page interactions", () => {
     expect(screen.getByLabelText("Username or email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
   });
+  it("removes the promotional feature list from the login hero", () => {
+    render(<LoginPage />);
+    expect(screen.queryByText("Calibrated prediction intervals")).not.toBeInTheDocument();
+    expect(screen.queryByText("SHAP explanations")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bayesian condition search")).not.toBeInTheDocument();
+  });
+  it("shows a clear validation message when registration username equals email", async () => {
+    render(<LoginPage register />);
+    fireEvent.change(screen.getByLabelText("Work email"), { target: { value: "researcher@lab.org" } });
+    fireEvent.change(screen.getByLabelText("Username"), { target: { value: "researcher@lab.org" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "long-enough-password" } });
+    fireEvent.click(screen.getByRole("button", { name: /Create account/i }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Username and email cannot be the same");
+    expect(auth.register).not.toHaveBeenCalled();
+  });
   it("switches between research-user and developer sign in", () => {
     render(<LoginPage />);
     const tabs = screen.getAllByRole("tab");

@@ -69,6 +69,10 @@ const [forgotMessage, setForgotMessage] = useState("");
   const submit = async (e) => {
     e.preventDefault();
     setErr("");
+    if (register && form.username.trim().toLowerCase() === form.email.trim().toLowerCase()) {
+      setErr("Username and email cannot be the same. Please choose a separate username.");
+      return;
+    }
     setBusy(true);
     try {
       let signedIn;
@@ -76,7 +80,7 @@ const [forgotMessage, setForgotMessage] = useState("");
       else signedIn = await login(form, developerMode);
       location.href = (signedIn?.role ?? (developerMode ? "developer" : "user")) === "developer" ? "/developer" : "/";
     } catch (x) {
-      setErr(x.message);
+      setErr(x.message || "Unable to sign in. Please check your details and try again.");
     } finally {
       setBusy(false);
     }
@@ -129,17 +133,7 @@ const [forgotMessage, setForgotMessage] = useState("");
           Machine-learning predictions of CO₂ adsorption capacity for MgO-based sorbents, with calibrated uncertainty and explainable SHAP
           insights.
         </p>
-        <ul className="hero-points">
-          <li>
-            <i /> Calibrated prediction intervals
-          </li>
-          <li>
-            <i /> SHAP explanations
-          </li>
-          <li>
-            <i /> Bayesian condition search
-          </li>
-        </ul>
+
       </div>
       <div className={"auth-card" + (developerMode ? " dev" : "")}>
         <div className="role-switch" role="tablist" aria-label="Sign in as" data-active={role}>
@@ -181,7 +175,7 @@ const [forgotMessage, setForgotMessage] = useState("");
         />
       </label>
 
-      {err && <div className="alert danger">{err}</div>}
+     {err && <div className="alert danger" role="alert">{err}</div>}
 
       {forgotMessage && (
         <div className="alert success">{forgotMessage}</div>
@@ -259,7 +253,7 @@ const [forgotMessage, setForgotMessage] = useState("");
         </div>
       </label>
 
-      {err && <div className="alert danger">{err}</div>}
+      {err && <div className="alert danger" role="alert">{err}</div>}
 
       <button className="btn primary wide" disabled={busy}>
         {busy ? <Loader2 className="spin" size={17} /> : null}

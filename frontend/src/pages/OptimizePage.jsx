@@ -286,6 +286,34 @@ export function OptimizePage() {
                 ) : (
                   <small>Prediction interval unavailable</small>
                 )}
+                {x.best_dopant && (
+                  <div className="dopant-recommendation">
+                    <div className="kv-row">
+                      <span>Best model-screened dopant</span>
+                      <b>{x.best_dopant.promoter}</b>
+                    </div>
+                    <div className="kv-row">
+                      <span>Dopant ratio</span>
+                      <b>{x.best_dopant.ratio}</b>
+                    </div>
+                    <div className="kv-row">
+                      <span>Predicted capacity with dopant</span>
+                      <b>{Number(x.best_dopant.capacity_mg_g).toFixed(1)} mg/g</b>
+                    </div>
+                    {x.dopant_comparisons?.length > 1 && (
+                      <details className="dopant-details">
+                        <summary>Compare top dopant formulations ({x.dopant_comparison_count} screened)</summary>
+                        {x.dopant_comparisons.map((dopant, index) => (
+                          <div className="kv-row" key={`${dopant.promoter}-${dopant.ratio}-${index}`}>
+                            <span>{index + 1}. {dopant.promoter} · ratio {dopant.ratio}</span>
+                            <b>{Number(dopant.capacity_mg_g).toFixed(1)} mg/g</b>
+                          </div>
+                        ))}
+                      </details>
+                    )}
+                    <small className="muted">Model-based comparison of formulations in the training dataset; validate experimentally.</small>
+                  </div>
+                )}
                 <span className={`status-pill ${x.confidence_flag === "high" ? "ok" : x.confidence_flag === "medium" ? "warn" : "danger"}`}>
                   {x.confidence_flag} confidence
                 </span>
