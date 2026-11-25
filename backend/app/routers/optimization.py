@@ -67,7 +67,7 @@ def optimize(req:OptimizeInput,user=Depends(require_user)):
         # Bounds themselves are clipped to hard constraints; no post-hoc overwriting is performed.
         if req.max_temperature is not None and rec.get('adsorption_temperature',0)>req.max_temperature: raise optuna.TrialPruned('hard temperature constraint')
         if req.max_time is not None and rec.get('adsorption_time',0)>req.max_time: raise optuna.TrialPruned('hard time constraint')
-        try: result=runtime.predict([rec],explain=False,persist_user=None)
+        try: result=runtime.predict([rec],explain=False,persist_user=None,include_model_std=False)
         except Exception as e: raise HTTPException(422,f'Optimization candidate failed: {e}')
         unc=result.get('uncertainty')
         if not unc: raise HTTPException(503,'Deployed model has no uncertainty calibration; retrain before risk-aware optimization')
@@ -89,30 +89,76 @@ def optimize(req:OptimizeInput,user=Depends(require_user)):
         distinct.setdefault(key,c)
     top=list(distinct.values())[:5]
 
-    # Rank observed promoter formulations at each optimized process condition.
+
+    # Rank all observed promoter formulations at each optimized process condition.
+    # Batch prediction improves speed without reducing dopant coverage.
     # These are model-based screens, not experimentally validated rankings.
     for candidate in top:
+        doped_records = [
+            {**candidate['conditions'], 'promoter': promoter, 'ratio': ratio}
+            for promoter, ratio in DOPANT_FORMULATIONS
+        ]
+
+        try:
+            predictions = runtime.predict_batch(
+                doped_records,
+                explain=False,
+                persist_user=None,
+                include_model_std=False
+            )
+        except Exception as e:
+            raise HTTPException(
+                503,
+                f'Batch dopant screening failed: {e}'
+            )
+
+        if len(predictions) != len(DOPANT_FORMULATIONS):
+            raise HTTPException(
+                503,
+                'Batch dopant screening returned an incomplete result set.'
+            )
+
         comparisons = []
-        for promoter, ratio in DOPANT_FORMULATIONS:
-            doped_conditions = {**candidate['conditions'], 'promoter': promoter, 'ratio': ratio}
-            try:
-                prediction = runtime.predict([doped_conditions], explain=False, persist_user=None)
-                uncertainty = prediction.get('uncertainty')
-                mean = float(prediction['capacity_mg_g'])
-                sigma = float((uncertainty or {}).get('sigma_mg_g', (uncertainty or {}).get('std_mg_g', 0.0)))
-                score = mean if req.objective_mode == 'mean' else mean - req.k * sigma
-                if prediction.get('ood_warning') and uncertainty:
-                    score -= req.ood_penalty * max(0.0, float(uncertainty['upper_mg_g'] - uncertainty['lower_mg_g']) / 2)
-                comparisons.append({
-                    'promoter': promoter, 'ratio': ratio,
-                    'capacity_mg_g': mean, 'capacity_mmol_g': mean / 44.01,
-                    'objective_value_mg_g': float(score),
-                    'confidence_flag': prediction.get('confidence_flag'),
-                    'ood_warning': prediction.get('ood_warning', False),
-                })
-            except Exception:
-                continue
-        comparisons.sort(key=lambda item: item['objective_value_mg_g'], reverse=True)
+
+        for (promoter, ratio), prediction in zip(DOPANT_FORMULATIONS, predictions):
+            uncertainty = prediction.get('uncertainty')
+            mean = float(prediction['capacity_mg_g'])
+            sigma = float(
+                (uncertainty or {}).get(
+                    'sigma_mg_g',
+                    (uncertainty or {}).get('std_mg_g', 0.0)
+                )
+            )
+
+            score = (
+                mean if req.objective_mode == 'mean'
+                else mean - req.k * sigma
+            )
+
+            if prediction.get('ood_warning') and uncertainty:
+                score -= req.ood_penalty * max(
+                    0.0,
+                    float(
+                        uncertainty['upper_mg_g'] -
+                        uncertainty['lower_mg_g']
+                    ) / 2
+                )
+
+            comparisons.append({
+                'promoter': promoter,
+                'ratio': ratio,
+                'capacity_mg_g': mean,
+                'capacity_mmol_g': mean / 44.01,
+                'objective_value_mg_g': float(score),
+                'confidence_flag': prediction.get('confidence_flag'),
+                'ood_warning': prediction.get('ood_warning', False),
+            })
+
+        comparisons.sort(
+            key=lambda item: item['objective_value_mg_g'],
+            reverse=True
+        )
+
         candidate['dopant_comparisons'] = comparisons[:5]
         candidate['best_dopant'] = comparisons[0] if comparisons else None
         candidate['dopant_comparison_count'] = len(comparisons)

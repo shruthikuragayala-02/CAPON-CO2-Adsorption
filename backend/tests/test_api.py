@@ -63,23 +63,95 @@ def test_legacy_artifact_has_neutral_uncertainty(monkeypatch):
   assert 'no calibration' in result['uncertainty_message'].lower()
  finally: monkeypatch.setattr(runtime,'payload',original)
 
+
 def test_optimizer_obeys_hard_temperature_bound(monkeypatch):
  from app.routers import optimization
- original_payload=optimization.runtime.payload;original_predict=optimization.runtime.predict
- monkeypatch.setattr(optimization.runtime,'payload',{'model':'test'})
- def fake_predict(records,explain=True,persist_user=None):
-  value=float(records[0]['adsorption_temperature']);return {'capacity_mg_g':value*2,'capacity_mmol_g':value*2/44.01,'uncertainty':{'std_mg_g':10,'std_mmol_g':10/44.01,'lower_mg_g':value*2-20,'upper_mg_g':value*2+20,'lower_mmol_g':(value*2-20)/44.01,'upper_mmol_g':(value*2+20)/44.01,'confidence_level':.9,'method':'test','relative_width_pct':20},'confidence_flag':'high','ood_warning':False,'ood_features':[]}
- monkeypatch.setattr(optimization.runtime,'predict',fake_predict)
+
+ original_payload = optimization.runtime.payload
+ original_predict = optimization.runtime.predict
+ original_predict_batch = optimization.runtime.predict_batch
+
+ monkeypatch.setattr(optimization.runtime, 'payload', {'model': 'test'})
+
+ def fake_predict(records, explain=True, persist_user=None, include_model_std=True):
+  value = float(records[0]['adsorption_temperature'])
+  return {
+   'capacity_mg_g': value * 2,
+   'capacity_mmol_g': value * 2 / 44.01,
+   'uncertainty': {
+    'sigma_mg_g': 10,
+    'std_mg_g': 10,
+    'std_mmol_g': 10 / 44.01,
+    'lower_mg_g': value * 2 - 20,
+    'upper_mg_g': value * 2 + 20,
+    'lower_mmol_g': (value * 2 - 20) / 44.01,
+    'upper_mmol_g': (value * 2 + 20) / 44.01,
+    'confidence_level': .9,
+    'method': 'test',
+    'relative_width_pct': 20
+   },
+   'confidence_flag': 'high',
+   'ood_warning': False,
+   'ood_features': []
+  }
+
+ def fake_predict_batch(records, persist_user=None, explain=False, include_model_std=False):
+  return [
+   fake_predict(
+    [record],
+    explain=explain,
+    persist_user=persist_user,
+    include_model_std=include_model_std
+   )
+   for record in records
+  ]
+
+ monkeypatch.setattr(optimization.runtime, 'predict', fake_predict)
+ monkeypatch.setattr(optimization.runtime, 'predict_batch', fake_predict_batch)
+
  try:
   with TestClient(app) as c:
-   c.post('/auth/register',json={'username':'optimizer_test','email':'optimizer@example.org','password':'test-password-123'})
-   login=c.post('/auth/login',json={'username':'optimizer_test','password':'test-password-123'});token=login.json()['access_token'];h={'Authorization':'Bearer '+token}
-   out=c.post('/optimize/conditions',json={'fixed':{},'free':{'adsorption_temperature':[350,500]},'max_temperature':400,'n_trials':3,'seed':3},headers=h)
-   assert out.status_code==200,out.text
-   assert len(out.json()['top_candidates'])<=5
-   assert all(x['conditions']['adsorption_temperature']<=400 for x in out.json()['top_candidates'])
+   c.post('/auth/register', json={
+    'username': 'optimizer_test',
+    'email': 'optimizer@example.org',
+    'password': 'test-password-123'
+   })
+   login = c.post('/auth/login', json={
+    'username': 'optimizer_test',
+    'password': 'test-password-123'
+   })
+   token = login.json()['access_token']
+   h = {'Authorization': 'Bearer ' + token}
+
+   out = c.post('/optimize/conditions', json={
+    'fixed': {},
+    'free': {'adsorption_temperature': [350, 500]},
+    'max_temperature': 400,
+    'n_trials': 3,
+    'seed': 3
+   }, headers=h)
+
+   assert out.status_code == 200, out.text
+   assert len(out.json()['top_candidates']) <= 5
+   assert all(
+    x['conditions']['adsorption_temperature'] <= 400
+    for x in out.json()['top_candidates']
+   )
+
+   assert out.json()['dopant_formulations_screened'] == len(
+    optimization.DOPANT_FORMULATIONS
+   )
+
+   for candidate in out.json()['top_candidates']:
+    assert candidate['dopant_comparison_count'] == len(
+     optimization.DOPANT_FORMULATIONS
+    )
+
  finally:
-  monkeypatch.setattr(optimization.runtime,'payload',original_payload);monkeypatch.setattr(optimization.runtime,'predict',original_predict)
+  monkeypatch.setattr(optimization.runtime, 'payload', original_payload)
+  monkeypatch.setattr(optimization.runtime, 'predict', original_predict)
+  monkeypatch.setattr(optimization.runtime, 'predict_batch', original_predict_batch)
+
 
 def test_training_options_and_request_validation():
  auth.DEV_PASSWORD='test-developer-password';auth._dev_hash=hash_password(auth.DEV_PASSWORD)

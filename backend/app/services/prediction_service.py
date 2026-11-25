@@ -53,7 +53,7 @@ class ModelRuntime:
         matrix=imp.transform(features) if imp is not None else features.to_numpy()
         preds=np.column_stack([tree.predict(matrix) for tree in reg.estimators_])
         return float(np.std(preds[0],ddof=1))
-    def predict(self,records,persist_user=None,explain=True):
+    def predict(self,records,persist_user=None,explain=True,include_model_std=True):
         if not self.payload: raise RuntimeError(self.error or 'Model is not loaded')
         raw=raw_records_to_frame(records);features=build_features(raw,drop_constant=False)
         columns=self.payload['features'];features=features.reindex(columns=columns,fill_value=0)
@@ -63,7 +63,8 @@ class ModelRuntime:
             val=features.iloc[0].get(col);bounds=ranges.get(col,{})
             if pd.notna(val) and bounds.get('min') is not None and (float(val)<bounds['min'] or float(val)>bounds['max']):
                 ood.append({'feature':col,'value':float(val),'observed_min':bounds['min'],'observed_max':bounds['max']})
-        calibration=meta.get('uncertainty');uncertainty=None;uncertainty_message=None;model_std=self._model_std(features)
+        calibration=meta.get('uncertainty');uncertainty=None;uncertainty_message=None
+        model_std=self._model_std(features) if include_model_std else None
         if calibration and calibration.get('sigma_model') is not None and calibration.get('conformal_quantile') is not None:
             try:
                 sigma=max(float(calibration['sigma_model'].predict(features)[0]),1e-6)
@@ -93,6 +94,156 @@ class ModelRuntime:
         if persist_user:
             with db() as c:c.execute('INSERT INTO predictions(id,user_id,input_json,result_json) VALUES(?,?,?,?)',(result['prediction_id'],persist_user,json.dumps(records[0],default=str),json.dumps(result,default=float)))
         return result
+
+    def predict_batch(self, records, persist_user=None, explain=False, include_model_std=False):
+        """Predict multiple records together for efficient internal batch evaluation."""
+        if not self.payload:
+            raise RuntimeError(self.error or 'Model is not loaded')
+        if not records:
+            return []
+
+        raw = raw_records_to_frame(records)
+        features = build_features(raw, drop_constant=False)
+        columns = self.payload['features']
+        features = features.reindex(columns=columns, fill_value=0)
+
+        # Predict every record in one model call.
+        predictions = np.asarray(
+            self.payload['model'].predict(features), dtype=float
+        ).reshape(-1)
+
+        meta = self.payload.get('metadata', {})
+        ranges = meta.get('training_feature_ranges', {})
+
+        # Calculate calibrated uncertainty for every record together.
+        calibration = meta.get('uncertainty')
+        sigmas = None
+        calibration_error = None
+
+        if calibration and calibration.get('sigma_model') is not None and calibration.get('conformal_quantile') is not None:
+            try:
+                sigmas = np.asarray(
+                    calibration['sigma_model'].predict(features), dtype=float
+                ).reshape(-1)
+            except Exception as e:
+                calibration_error = f'Calibration could not be applied: {e}'
+        else:
+            calibration_error = 'This saved model has no calibration artifact. Retrain the model to enable prediction intervals.'
+
+        results = []
+
+        for i, record in enumerate(records):
+            pred = float(predictions[i])
+            row = features.iloc[[i]]
+
+            # Check OOD features independently for this record.
+            ood = []
+            for col in columns:
+                val = features.iloc[i].get(col)
+                bounds = ranges.get(col, {})
+                if pd.notna(val) and bounds.get('min') is not None:
+                    if float(val) < bounds['min'] or float(val) > bounds['max']:
+                        ood.append({
+                            'feature': col,
+                            'value': float(val),
+                            'observed_min': bounds['min'],
+                            'observed_max': bounds['max']
+                        })
+
+            uncertainty = None
+            uncertainty_message = calibration_error
+
+            if sigmas is not None:
+                try:
+                    sigma = max(float(sigmas[i]), 1e-6)
+                    widening = 1 + 0.25 * len(ood)
+                    std = sigma * widening
+                    q = float(calibration['conformal_quantile'])
+                    half = q * std
+                    lo, hi = pred - half, pred + half
+                    relative = 100 * (hi - lo) / max(abs(pred), 1e-6)
+                    level = float(calibration.get('target_coverage', 0.90))
+
+                    flag = 'high' if relative <= 50 else ('medium' if relative <= 100 else 'low')
+                    if ood:
+                        flag = {'high': 'medium', 'medium': 'low', 'low': 'low'}[flag]
+
+                    uncertainty = {
+                        'sigma_mg_g': std,
+                        'sigma_mmol_g': std / 44.01,
+                        'std_mg_g': std,
+                        'std_mmol_g': std / 44.01,
+                        'lower_mg_g': lo,
+                        'upper_mg_g': hi,
+                        'lower_mmol_g': lo / 44.01,
+                        'upper_mmol_g': hi / 44.01,
+                        'confidence_level': level,
+                        'method': calibration.get(
+                            'method', 'Grouped normalized conformal interval'
+                        ),
+                        'relative_width_pct': relative
+                    }
+                    uncertainty_message = None
+                except Exception as e:
+                    uncertainty_message = f'Calibration could not be applied: {e}'
+
+            if uncertainty is None:
+                flag = 'low'
+                half = None
+                prediction_range = None
+            else:
+                half = (uncertainty['upper_mg_g'] - uncertainty['lower_mg_g']) / 2
+                prediction_range = [
+                    uncertainty['lower_mg_g'],
+                    uncertainty['upper_mg_g']
+                ]
+
+            model_std = None
+            if include_model_std:
+                model_std = self._model_std(row)
+
+            local = None
+            shap_error = None
+            if explain:
+                try:
+                    local = self._shap_explanation(row, pred)
+                except Exception as e:
+                    shap_error = f'SHAP explanation unavailable: {e}'
+
+            result = {
+                'prediction_id': str(uuid.uuid4()),
+                'capacity_mg_g': pred,
+                'capacity_mmol_g': pred / 44.01,
+                'uncertainty': uncertainty,
+                'confidence_flag': flag,
+                'uncertainty_message': uncertainty_message,
+                'uncertainty_estimate_mg_g': half,
+                'uncertainty_estimate_mmol_g': None if half is None else half / 44.01,
+                'prediction_range_mg_g': prediction_range,
+                'uncertainty_label': None if uncertainty is None else uncertainty['method'],
+                'model_std_mg_g': model_std,
+                'ood_warning': bool(ood),
+                'ood_features': ood,
+                'local_explanation': local,
+                'explanation_error': shap_error,
+                'model_version': self.payload.get('version', 'unknown')
+            }
+
+            if persist_user:
+                with db() as c:
+                    c.execute(
+                        'INSERT INTO predictions(id,user_id,input_json,result_json) VALUES(?,?,?,?)',
+                        (
+                            result['prediction_id'],
+                            persist_user,
+                            json.dumps(record, default=str),
+                            json.dumps(result, default=float)
+                        )
+                    )
+
+            results.append(result)
+
+        return results
 
 runtime=ModelRuntime()
 def reload_runtime():runtime.load();return runtime
